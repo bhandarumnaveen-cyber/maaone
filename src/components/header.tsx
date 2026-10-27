@@ -8,7 +8,8 @@ import clsx from "clsx";
 import { MaaOneLogo } from "./logos";
 import { ThemeToggle } from "./theme-toggle";
 import { ButtonLink } from "./ui";
-import { primaryCta } from "@/site.config";
+import { useSettings } from "./settings-provider";
+import { primaryCta } from "@/lib/cta";
 
 const nav = [
   { href: "/features", label: "Features" },
@@ -21,7 +22,7 @@ const nav = [
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const cta = primaryCta();
+  const cta = primaryCta(useSettings());
 
   useEffect(() => setOpen(false), [pathname]);
 

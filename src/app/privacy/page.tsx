@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const cfg = await getSettings();
   return (
     <LegalPage title="Privacy Policy">
       <p>
@@ -79,7 +81,7 @@ export default function PrivacyPage() {
       <p>
         You can ask to access, correct or erase your personal data, withdraw consent, or nominate
         another person to exercise these rights, by writing to{" "}
-        <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>.
+        <a href={`mailto:${cfg.supportEmail}`}>{cfg.supportEmail}</a>.
       </p>
 
       <h2>7. Children</h2>

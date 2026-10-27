@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
-import { TRIAL_DAYS, site } from "@/site.config";
+import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Refund Policy",
@@ -8,11 +9,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/refund-policy" },
 };
 
-export default function RefundPage() {
+export default async function RefundPage() {
+  const cfg = await getSettings();
   return (
     <LegalPage title="Refund Policy">
       <p>
-        Every {site.name} plan starts with a {TRIAL_DAYS}-day free trial so you can try it fully
+        Every {site.name} plan starts with a {cfg.trialDays}-day free trial so you can try it fully
         before paying. Because of this, payments are generally non-refundable, with the exceptions
         below.
       </p>
@@ -44,7 +46,7 @@ export default function RefundPage() {
 
       <h2>3. How to ask for a refund</h2>
       <p>
-        Email <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a> with your registered
+        Email <a href={`mailto:${cfg.supportEmail}`}>{cfg.supportEmail}</a> with your registered
         email or phone number and the invoice number. We reply within 2 working days. Approved
         refunds go back to the original payment method within 5–7 working days, and we issue a GST
         credit note.

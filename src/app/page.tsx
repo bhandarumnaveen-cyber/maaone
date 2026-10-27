@@ -16,14 +16,17 @@ import {
 } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import { FinalCta } from "@/components/final-cta";
+import { JsonLd } from "@/components/json-ld";
 import { LaunchStrip } from "@/components/launch-strip";
 import { LaptopDashboardMockup, PhoneInboxMockup } from "@/components/mockups";
 import { FeatureBlocks } from "@/components/feature-blocks";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
-import { Pricing } from "@/components/pricing";
+import { PricingPreview } from "@/components/pricing-preview";
 import { Faq } from "@/components/faq";
 import { ButtonLink, SectionHeading } from "@/components/ui";
-import { SALES_OPEN, TRIAL_DAYS, primaryCta } from "@/site.config";
+import { getPlans, getSettings } from "@/lib/settings";
+import { primaryCta } from "@/lib/cta";
+import { site } from "@/site.config";
 
 const sources = [
   { icon: Globe, label: "Website forms" },
@@ -61,10 +64,31 @@ const reasons = [
 /** Refresh the waitlist count every 5 minutes. */
 export const revalidate = 300;
 
-export default function Home() {
-  const cta = primaryCta();
+export default async function Home() {
+  const [settings, plans] = await Promise.all([getSettings(), getPlans()]);
+  const cta = primaryCta(settings);
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: site.name,
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web, Android, iOS",
+          description: site.description,
+          url: site.url,
+          publisher: { "@type": "Organization", name: site.company, url: site.url },
+          offers: plans.map((p) => ({
+            "@type": "Offer",
+            name: p.name,
+            price: (p.inrMonthly / 100).toFixed(2),
+            priceCurrency: "INR",
+            category: "subscription",
+            availabilityStarts: settings.launchDate,
+          })),
+        }}
+      />
       {/* 1. Hero */}
       <section className="relative overflow-hidden">
         <div
@@ -98,9 +122,9 @@ export default function Home() {
               </ButtonLink>
             </div>
             <p className="mt-4 text-sm text-muted">
-              {SALES_OPEN
-                ? `${TRIAL_DAYS}-day free trial · Cancel anytime`
-                : `No payment needed · ${TRIAL_DAYS}-day free trial at launch`}
+              {settings.salesOpen
+                ? `${settings.trialDays}-day free trial · Cancel anytime`
+                : `No payment needed · ${settings.trialDays}-day free trial at launch`}
             </p>
           </div>
 
@@ -214,10 +238,10 @@ export default function Home() {
       <section className="section">
         <div className="container-page">
           <SectionHeading eyebrow="Pricing" title="Simple pricing, per business">
-            Prices exclude 18% GST. Yearly plans get 2 months free.
+            Prices exclude GST. Yearly plans get 2 months free.
           </SectionHeading>
           <div className="mt-10">
-            <Pricing />
+            <PricingPreview plans={plans} settings={settings} />
           </div>
           <div className="mt-8 text-center">
             <Link href="/pricing" className="inline-flex items-center gap-1 font-semibold text-brand-ink hover:underline">

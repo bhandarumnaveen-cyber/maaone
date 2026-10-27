@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const LEGAL_UPDATED = "27 October 2026";
 
@@ -19,7 +20,8 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
   );
 }
 
-export function GrievanceOfficer() {
+export async function GrievanceOfficer() {
+  const cfg = await getSettings();
   return (
     <>
       <h2>Grievance officer</h2>
@@ -31,7 +33,7 @@ export function GrievanceOfficer() {
       <p>
         <strong className="text-ink">{site.founder}</strong>, {site.founderTitle}, {site.company}
         <br />
-        Email: <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+        Email: <a href={`mailto:${cfg.supportEmail}`}>{cfg.supportEmail}</a>
       </p>
       <p>
         We acknowledge complaints within 48 hours and aim to resolve them within 30 days of

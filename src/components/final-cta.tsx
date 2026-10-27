@@ -1,9 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "./ui";
-import { SALES_OPEN, TRIAL_DAYS, primaryCta, site } from "@/site.config";
+import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
+import { primaryCta } from "@/lib/cta";
 
-export function FinalCta() {
-  const cta = primaryCta();
+export async function FinalCta() {
+  const { salesOpen, trialDays } = await getSettings();
+  const cta = primaryCta({ salesOpen, trialDays });
   return (
     <section className="pb-16 sm:pb-24">
       <div className="container-page">
@@ -16,12 +19,12 @@ export function FinalCta() {
             {site.tagline}.
           </h2>
           <p className="relative mx-auto mt-3 max-w-xl text-lg text-indigo-100">
-            {SALES_OPEN
-              ? `Try every feature free for ${TRIAL_DAYS} days. Cancel anytime.`
+            {salesOpen
+              ? `Try every feature free for ${trialDays} days. Cancel anytime.`
               : "Be among the first businesses on Maa One. Join the waitlist today."}
           </p>
           <ButtonLink href={cta.href} variant="accent" size="lg" className="relative mt-8">
-            {SALES_OPEN ? "Start free trial" : cta.label}
+            {salesOpen ? "Start free trial" : cta.label}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </ButtonLink>
         </div>

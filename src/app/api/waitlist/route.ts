@@ -3,17 +3,10 @@ import { badRequest, invalid, isBot, readJson, serverError } from "@/lib/api";
 import { validateWaitlist } from "@/lib/validation";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
+import { getPlans } from "@/lib/settings";
+import { sendWaitlistEmail } from "@/lib/billing";
 
-/** join_waitlist may return a bare number, a row, or a one-row set. */
-function extractPosition(data: unknown): number | undefined {
-  const row = Array.isArray(data) ? data[0] : data;
-  if (typeof row === "number") return row;
-  if (row && typeof row === "object" && "waitlist_position" in row) {
-    const n = Number((row as { waitlist_position: unknown }).waitlist_position);
-    return Number.isFinite(n) ? n : undefined;
-  }
-  return undefined;
-}
+type JoinResult = { waitlist_position: number; total_on_waitlist: number; already_joined: boolean };
 
 export async function POST(req: Request) {
   const body = await readJson(req);
@@ -24,17 +17,28 @@ export async function POST(req: Request) {
   if (!ok) return invalid(errors);
   if (!supabaseConfigured) return NextResponse.json({ ok: true, preview: true });
 
-  const { data: result, error } = await createAnonClient().rpc("join_waitlist", {
+  // plan_interest references plans(code); anything else is stored as "not sure".
+  const plans = await getPlans();
+  const planInterest = plans.some((p) => p.code === data.plan) ? data.plan : null;
+
+  const { data: rows, error } = await createAnonClient().rpc("join_waitlist", {
     p_name: data.name,
     p_email: data.email,
     p_phone: data.phone,
     p_business_name: data.businessName,
     p_business_type: data.businessType,
     p_city: data.city,
-    p_plan_interest: data.plan,
+    p_plan_interest: planInterest,
     p_source: "website",
   });
   if (error) return serverError("join_waitlist", error);
 
-  return NextResponse.json({ ok: true, position: extractPosition(result) });
+  const result = (rows as JoinResult[] | null)?.[0];
+  const position = result ? Number(result.waitlist_position) : undefined;
+  if (result && !result.already_joined) await sendWaitlistEmail(data.email, data.name, position);
+  return NextResponse.json({
+    ok: true,
+    position,
+    alreadyJoined: result?.already_joined ?? false,
+  });
 }

@@ -2,17 +2,11 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import { Check } from "lucide-react";
-import { ButtonLink } from "./ui";
-import {
-  SALES_OPEN,
-  TRIAL_DAYS,
-  YEARLY_MONTHS_CHARGED,
-  plans,
-  primaryCta,
-  type Plan,
-} from "@/site.config";
+import { CardShell } from "./plan-card";
+import { useSettings } from "./settings-provider";
+import { primaryCta } from "@/lib/cta";
 import { formatMoney, type Billing, type Currency } from "@/lib/format";
+import type { Plan, Settings } from "@/lib/types";
 
 function Toggle<T extends string>({
   label,
@@ -46,7 +40,8 @@ function Toggle<T extends string>({
   );
 }
 
-export function Pricing() {
+export function Pricing({ plans }: { plans: Plan[] }) {
+  const settings = useSettings();
   const [billing, setBilling] = useState<Billing>("monthly");
   const [currency, setCurrency] = useState<Currency>("INR");
 
@@ -89,65 +84,61 @@ export function Pricing() {
       </div>
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        <TrialCard settings={settings} />
         {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} billing={billing} currency={currency} />
+          <PlanCard key={plan.code} plan={plan} billing={billing} currency={currency} settings={settings} />
         ))}
       </div>
     </div>
   );
 }
 
-function PlanCard({ plan, billing, currency }: { plan: Plan; billing: Billing; currency: Currency }) {
-  const monthly = currency === "INR" ? plan.inr : plan.usd;
-  const isTrial = plan.id === "trial";
-  const amount = billing === "yearly" ? monthly * YEARLY_MONTHS_CHARGED : monthly;
-  const cta = isTrial ? primaryCta("growth") : primaryCta(plan.id);
-  const label = SALES_OPEN && !isTrial ? `Start with ${plan.name}` : cta.label;
-
+function TrialCard({ settings }: { settings: Settings }) {
+  const cta = primaryCta(settings, "growth");
   return (
-    <article
-      className={clsx(
-        "card relative flex flex-col p-5",
-        plan.popular && "border-brand-ink/60 shadow-xl shadow-brand/10 ring-1 ring-brand-ink/40",
-      )}
-    >
-      {plan.popular && (
-        <span className="absolute -top-3 left-5 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-slate-950">
-          Most popular
-        </span>
-      )}
-      <h3 className="text-lg font-semibold text-ink">{plan.name}</h3>
-      <p className="mt-1 min-h-[2.5rem] text-sm text-muted">{plan.summary}</p>
-      <p className="mt-4 flex items-baseline gap-1">
-        <span className="text-3xl font-bold tracking-tight text-ink">{formatMoney(amount, currency)}</span>
-        <span className="text-sm text-muted">
-          {isTrial ? `for ${TRIAL_DAYS} days` : billing === "yearly" ? "/year" : "/month"}
-        </span>
-      </p>
-      <p className="mt-1 h-5 text-xs text-muted">
-        {isTrial
-          ? "Then pick any plan"
-          : billing === "yearly"
-            ? `${formatMoney(monthly, currency)}/month, billed yearly`
-            : currency === "INR"
-              ? "+ 18% GST"
-              : "+ applicable taxes"}
-      </p>
-      <ButtonLink
-        href={cta.href}
-        variant={plan.popular ? "primary" : "secondary"}
-        className="mt-5 w-full"
-      >
-        {label}
-      </ButtonLink>
-      <ul className="mt-5 space-y-2.5 text-sm">
-        {plan.features.map((f) => (
-          <li key={f} className="flex gap-2 text-ink">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
-            {f}
-          </li>
-        ))}
-      </ul>
-    </article>
+    <CardShell
+      name="Free trial"
+      summary={`Everything in Growth, free for ${settings.trialDays} days.`}
+      price="₹0"
+      unit={`for ${settings.trialDays} days`}
+      note="Then pick any plan"
+      cta={cta}
+      features={["Everything in Growth", "Every live module, 3 users", `Cancel before day ${settings.trialDays} and pay nothing`]}
+    />
+  );
+}
+
+function PlanCard({
+  plan,
+  billing,
+  currency,
+  settings,
+}: {
+  plan: Plan;
+  billing: Billing;
+  currency: Currency;
+  settings: Settings;
+}) {
+  const inr = currency === "INR";
+  const monthly = inr ? plan.inrMonthly : plan.usdMonthly;
+  const yearly = inr ? plan.inrYearly : plan.usdYearly;
+  const cta = primaryCta(settings, plan.code);
+  return (
+    <CardShell
+      name={plan.name}
+      summary={plan.tagline}
+      popular={plan.popular}
+      price={formatMoney(billing === "yearly" ? yearly : monthly, currency)}
+      unit={billing === "yearly" ? "/year" : "/month"}
+      note={
+        billing === "yearly"
+          ? `${formatMoney(Math.round(yearly / 12), currency)}/month, billed yearly`
+          : inr
+            ? `+ ${settings.gstRate}% GST`
+            : "+ applicable taxes"
+      }
+      cta={{ href: cta.href, label: settings.salesOpen ? `Start with ${plan.name}` : cta.label }}
+      features={plan.features}
+    />
   );
 }

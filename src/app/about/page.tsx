@@ -4,6 +4,7 @@ import { WhatsAppIcon } from "@/components/icons";
 import { MaaLabsLogo, NaveenCodesLogo } from "@/components/logos";
 import { FinalCta } from "@/components/final-cta";
 import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "About",
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const cfg = await getSettings();
   return (
     <>
       <section className="relative overflow-hidden border-b border-line bg-surface">
@@ -98,20 +100,20 @@ export default function AboutPage() {
               </p>
               <ul className="mt-6 space-y-2 text-sm">
                 <li>
-                  <a href={`mailto:${site.supportEmail}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
+                  <a href={`mailto:${cfg.supportEmail}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
                     <Mail className="h-4 w-4" aria-hidden="true" />
-                    {site.supportEmail}
+                    {cfg.supportEmail}
                   </a>
                 </li>
                 <li>
                   <a
-                    href={site.whatsappLink}
+                    href={cfg.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline"
                   >
                     <WhatsAppIcon className="h-4 w-4" />
-                    WhatsApp {site.whatsappDisplay}
+                    WhatsApp {cfg.whatsappDisplay}
                   </a>
                 </li>
               </ul>
@@ -136,9 +138,9 @@ export default function AboutPage() {
                   </a>
                 </li>
                 <li>
-                  <a href={`mailto:${site.developer.email}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
+                  <a href={`mailto:${cfg.naveencodesEmail}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
                     <Mail className="h-4 w-4" aria-hidden="true" />
-                    {site.developer.email}
+                    {cfg.naveencodesEmail}
                   </a>
                 </li>
               </ul>
@@ -157,8 +159,8 @@ export default function AboutPage() {
               ["Company", site.company],
               ["Product", site.name],
               [site.founderTitle, site.founder],
-              ["Support", site.supportEmail],
-              ["WhatsApp", site.whatsappDisplay],
+              ["Support", cfg.supportEmail],
+              ["WhatsApp", cfg.whatsappDisplay],
             ].map(([k, v]) => (
               <div key={k} className="grid gap-1 px-5 py-4 sm:grid-cols-3">
                 <dt className="text-sm font-medium text-muted">{k}</dt>

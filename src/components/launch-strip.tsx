@@ -1,13 +1,15 @@
 import { Rocket } from "lucide-react";
 import { Countdown } from "./countdown";
 import { ButtonLink } from "./ui";
-import { LAUNCH_DATE_ISO, LAUNCH_DATE_LABEL, SALES_OPEN, primaryCta } from "@/site.config";
+import { getSettings } from "@/lib/settings";
+import { primaryCta } from "@/lib/cta";
 import { getWaitlistCount } from "@/lib/waitlist";
 
 export async function LaunchStrip() {
-  if (SALES_OPEN) return null;
+  const s = await getSettings();
+  if (s.salesOpen) return null;
   const count = await getWaitlistCount();
-  const cta = primaryCta();
+  const cta = primaryCta(s);
   return (
     <section aria-label="Launch date" className="bg-brand">
       <div className="container-page flex flex-col gap-5 py-6 lg:flex-row lg:items-center lg:justify-between">
@@ -16,7 +18,7 @@ export async function LaunchStrip() {
             <Rocket className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
-            <p className="text-lg font-bold text-white">Launching {LAUNCH_DATE_LABEL}</p>
+            <p className="text-lg font-bold text-white">Launching {s.launchDateLabel}</p>
             <p className="text-sm text-indigo-100">
               {count !== null && count > 0
                 ? `${count.toLocaleString("en-IN")} businesses are already on the waitlist.`
@@ -25,7 +27,7 @@ export async function LaunchStrip() {
           </div>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Countdown to={LAUNCH_DATE_ISO} />
+          <Countdown to={s.launchDateIso} />
           <ButtonLink href={cta.href} variant="accent">
             {cta.label}
           </ButtonLink>

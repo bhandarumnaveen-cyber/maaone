@@ -5,6 +5,7 @@ import { FeatureRequestForm } from "@/components/forms/feature-request-form";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
 import { PageHero } from "@/components/ui";
 import { launchSteps } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Roadmap — Kab kya aayega",
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/roadmap" },
 };
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const steps = launchSteps(await getSettings());
   return (
     <>
       <PageHero eyebrow="Roadmap" title="Kab kya aayega">
@@ -26,7 +28,7 @@ export default function RoadmapPage() {
           <div className="rounded-2xl border-2 border-accent/60 bg-accent-soft/40 p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-ink">Start here</h2>
             <ol className="mt-6 grid gap-4 md:grid-cols-4">
-              {launchSteps.map((s, i) => (
+              {steps.map((s, i) => (
                 <li
                   key={s.title}
                   className={clsx(

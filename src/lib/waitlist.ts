@@ -7,7 +7,7 @@ export async function getWaitlistCount(): Promise<number | null> {
   try {
     const { data, error } = await createAnonClient().rpc("waitlist_count");
     if (error) throw error;
-    const n = Number(Array.isArray(data) ? Object.values(data[0] ?? {})[0] : data);
+    const n = Number(data);
     return Number.isFinite(n) ? n : null;
   } catch (e) {
     console.error("[waitlist_count]", e);

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
-import { TRIAL_DAYS, site } from "@/site.config";
+import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Cancellation Policy",
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/cancellation-policy" },
 };
 
-export default function CancellationPage() {
+export default async function CancellationPage() {
+  const cfg = await getSettings();
   return (
     <LegalPage title="Cancellation Policy">
       <p>You can cancel your {site.name} subscription at any time. There are no cancellation fees.</p>
@@ -20,14 +22,14 @@ export default function CancellationPage() {
           <strong>Cancel subscription</strong>, or
         </li>
         <li>
-          email <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a> from your registered
+          email <a href={`mailto:${cfg.supportEmail}`}>{cfg.supportEmail}</a> from your registered
           email address.
         </li>
       </ul>
 
       <h2>2. During the free trial</h2>
       <p>
-        Cancel any time before the {TRIAL_DAYS}-day trial ends and you will not be charged.
+        Cancel any time before the {cfg.trialDays}-day trial ends and you will not be charged.
       </p>
 
       <h2>3. After the trial</h2>
