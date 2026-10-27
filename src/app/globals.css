@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f1f0ee;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #e2e8f0;
+  /* Primary — deep indigo */
+  --brand: #3730a3;
+  --brand-hover: #312e81;
+  --brand-ink: #3730a3;
+  --brand-soft: #eef2ff;
+  /* Accent — warm saffron */
+  --accent: #f59e0b;
+  --accent-ink: #b45309;
+  --accent-soft: #fef3c7;
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0b0b12;
+  --surface: #14141f;
+  --surface-2: #1c1c2b;
+  --ink: #e2e8f0;
+  --muted: #a3acbd;
+  --line: #2a2a3d;
+  --brand: #4f46e5;
+  --brand-hover: #4338ca;
+  --brand-ink: #a5b4fc;
+  --brand-soft: #1e1b4b;
+  --accent: #f59e0b;
+  --accent-ink: #fbbf24;
+  --accent-soft: #3a2a08;
+  --success: #4ade80;
+  --success-soft: #052e16;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .section {
+    @apply py-16 sm:py-24;
+  }
+  .eyebrow {
+    @apply text-sm font-semibold tracking-wide text-accent-ink uppercase;
+  }
+  .h2 {
+    @apply text-3xl font-bold tracking-tight text-ink sm:text-4xl;
+  }
+  .lead {
+    @apply text-lg leading-relaxed text-muted;
+  }
+  .card {
+    @apply rounded-xl border border-line bg-surface;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-ink/30;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+  .prose-legal h2 {
+    @apply mt-10 mb-3 text-xl font-semibold text-ink;
+  }
+  .prose-legal h3 {
+    @apply mt-6 mb-2 font-semibold text-ink;
+  }
+  .prose-legal p,
+  .prose-legal li {
+    @apply leading-relaxed text-muted;
+  }
+  .prose-legal p {
+    @apply mb-4;
+  }
+  .prose-legal ul {
+    @apply mb-4 list-disc space-y-1.5 pl-5;
+  }
+  .prose-legal a {
+    @apply font-medium text-brand-ink underline underline-offset-2;
+  }
+}
