@@ -22,3 +22,11 @@ export function invalid(errors: FieldErrors) {
 export function badRequest() {
   return NextResponse.json({ ok: false, error: "Invalid request." }, { status: 400 });
 }
+
+export function serverError(context: string, error: unknown) {
+  console.error(`[${context}]`, error);
+  return NextResponse.json(
+    { ok: false, error: "We couldn't save that just now. Please try again in a minute." },
+    { status: 500 },
+  );
+}

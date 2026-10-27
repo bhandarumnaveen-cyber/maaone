@@ -58,6 +58,9 @@ const reasons = [
   { icon: Building2, title: "One price per business", body: "Pay per business, not per user. Add your team without surprise bills." },
 ];
 
+/** Refresh the waitlist count every 5 minutes. */
+export const revalidate = 300;
+
 export default function Home() {
   const cta = primaryCta();
   return (

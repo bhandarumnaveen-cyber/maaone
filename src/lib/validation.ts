@@ -61,12 +61,12 @@ export function validateContact(input: Record<string, unknown>) {
 
 export function validateFeatureRequest(input: Record<string, unknown>) {
   const data = {
-    title: str(input.title, 120),
-    details: str(input.details, 2000),
+    name: str(input.name, 100),
     email: str(input.email, 160).toLowerCase(),
+    request: str(input.request, 2000),
   };
   const errors: FieldErrors = {};
-  if (data.title.length < 4) errors.title = "Please describe the feature in a few words.";
+  if (data.request.length < 10) errors.request = "Please describe the feature in a sentence or two.";
   if (data.email && !EMAIL.test(data.email)) errors.email = "Please enter a valid email or leave it blank.";
   return { data, errors, ok: Object.keys(errors).length === 0 };
 }

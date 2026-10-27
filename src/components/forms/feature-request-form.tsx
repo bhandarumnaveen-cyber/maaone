@@ -26,22 +26,25 @@ export function FeatureRequestForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="card relative space-y-4 p-5 sm:p-6">
       <Honeypot />
-      <Field id="fr-title" label="What should Maa One do?" error={errors.title}>
-        <input
-          id="fr-title"
-          name="title"
+      <Field id="fr-request" label="What should Maa One do?" error={errors.request}>
+        <textarea
+          id="fr-request"
+          name="request"
+          rows={4}
           className="input"
-          placeholder="e.g. Send a WhatsApp reminder a day before each booking"
+          placeholder="e.g. Send a WhatsApp reminder a day before each booking. I run a salon and today I call everyone."
           required
-          {...errProps("fr-title", errors.title)}
+          {...errProps("fr-request", errors.request)}
         />
       </Field>
-      <Field id="fr-details" label="Tell us more (optional)">
-        <textarea id="fr-details" name="details" rows={4} className="input" placeholder="Your business, how you'd use it, what you do today…" />
-      </Field>
-      <Field id="fr-email" label="Email (optional)" hint="So we can tell you when it ships." error={errors.email}>
-        <input id="fr-email" name="email" type="email" className="input" autoComplete="email" {...errProps("fr-email", errors.email)} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        <Field id="fr-name" label="Name (optional)">
+          <input id="fr-name" name="name" className="input" autoComplete="name" />
+        </Field>
+        <Field id="fr-email" label="Email (optional)" hint="So we can tell you when it ships." error={errors.email}>
+          <input id="fr-email" name="email" type="email" className="input" autoComplete="email" {...errProps("fr-email", errors.email)} />
+        </Field>
+      </div>
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={buttonClass("primary")} disabled={state.status === "submitting"}>
         {state.status === "submitting" ? "Sending…" : "Request this feature"}
