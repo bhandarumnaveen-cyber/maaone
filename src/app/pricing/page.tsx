@@ -33,6 +33,7 @@ export default async function PricingPage() {
 
       <section className="section">
         <div className="container-page">
+          <h2 className="sr-only">Plans</h2>
           <Pricing plans={plans} />
           <ul className="mx-auto mt-10 max-w-3xl space-y-2 text-sm text-muted">
             {notes.map((n) => (

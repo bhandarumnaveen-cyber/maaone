@@ -4,6 +4,7 @@ import { validateWaitlist } from "@/lib/validation";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { getPlans } from "@/lib/settings";
+import { sendWaitlistEmail } from "@/lib/billing";
 
 type JoinResult = { waitlist_position: number; total_on_waitlist: number; already_joined: boolean };
 
@@ -33,9 +34,11 @@ export async function POST(req: Request) {
   if (error) return serverError("join_waitlist", error);
 
   const result = (rows as JoinResult[] | null)?.[0];
+  const position = result ? Number(result.waitlist_position) : undefined;
+  if (result && !result.already_joined) await sendWaitlistEmail(data.email, data.name, position);
   return NextResponse.json({
     ok: true,
-    position: result ? Number(result.waitlist_position) : undefined,
+    position,
     alreadyJoined: result?.already_joined ?? false,
   });
 }

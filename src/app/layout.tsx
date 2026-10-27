@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { themeScript } from "@/lib/theme";
 import { SettingsProvider } from "@/components/settings-provider";
+import { JsonLd } from "@/components/json-ld";
 import { getSettings } from "@/lib/settings";
 import { site } from "@/site.config";
 
@@ -45,6 +46,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="flex min-h-dvh flex-col">
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: site.company,
+            url: site.url,
+            email: settings.supportEmail,
+            founder: { "@type": "Person", name: site.founder, jobTitle: site.founderTitle },
+            sameAs: [settings.instagramUrl],
+            brand: { "@type": "Brand", name: site.name },
+          }}
+        />
         <SettingsProvider value={settings}>
           <Header />
           <main id="main" className="flex-1">

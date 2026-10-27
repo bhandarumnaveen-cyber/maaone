@@ -16,15 +16,17 @@ import {
 } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import { FinalCta } from "@/components/final-cta";
+import { JsonLd } from "@/components/json-ld";
 import { LaunchStrip } from "@/components/launch-strip";
 import { LaptopDashboardMockup, PhoneInboxMockup } from "@/components/mockups";
 import { FeatureBlocks } from "@/components/feature-blocks";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
-import { Pricing } from "@/components/pricing";
+import { PricingPreview } from "@/components/pricing-preview";
 import { Faq } from "@/components/faq";
 import { ButtonLink, SectionHeading } from "@/components/ui";
 import { getPlans, getSettings } from "@/lib/settings";
 import { primaryCta } from "@/lib/cta";
+import { site } from "@/site.config";
 
 const sources = [
   { icon: Globe, label: "Website forms" },
@@ -67,6 +69,26 @@ export default async function Home() {
   const cta = primaryCta(settings);
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: site.name,
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web, Android, iOS",
+          description: site.description,
+          url: site.url,
+          publisher: { "@type": "Organization", name: site.company, url: site.url },
+          offers: plans.map((p) => ({
+            "@type": "Offer",
+            name: p.name,
+            price: (p.inrMonthly / 100).toFixed(2),
+            priceCurrency: "INR",
+            category: "subscription",
+            availabilityStarts: settings.launchDate,
+          })),
+        }}
+      />
       {/* 1. Hero */}
       <section className="relative overflow-hidden">
         <div
@@ -216,10 +238,10 @@ export default async function Home() {
       <section className="section">
         <div className="container-page">
           <SectionHeading eyebrow="Pricing" title="Simple pricing, per business">
-            Prices exclude 18% GST. Yearly plans get 2 months free.
+            Prices exclude GST. Yearly plans get 2 months free.
           </SectionHeading>
           <div className="mt-10">
-            <Pricing plans={plans} />
+            <PricingPreview plans={plans} settings={settings} />
           </div>
           <div className="mt-8 text-center">
             <Link href="/pricing" className="inline-flex items-center gap-1 font-semibold text-brand-ink hover:underline">

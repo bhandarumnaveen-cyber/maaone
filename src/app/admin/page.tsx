@@ -48,7 +48,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   // Subscriptions point at auth users; look up their emails from profiles.
   let emails: Record<string, string> = {};
-  if (tab === "subscribers" && rows.length) {
+  if ((tab === "subscribers" || tab === "support") && rows.length) {
     const ids = [...new Set(rows.map((r) => r.user_id).filter(Boolean))] as string[];
     const { data } = await supabase.from("profiles").select("id, email, phone").in("id", ids);
     emails = Object.fromEntries((data ?? []).map((p) => [p.id, p.email ?? p.phone ?? ""]));
@@ -149,7 +149,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <table className="w-full text-left text-sm">
             <thead className="border-b border-line">
               <tr>
-                {tab === "subscribers" && <th className="px-3 py-2.5 font-semibold text-ink">customer</th>}
+                {(tab === "subscribers" || tab === "support") && (
+                  <th scope="col" className="px-3 py-2.5 font-semibold text-ink">customer</th>
+                )}
                 {def.columns.map((c) => (
                   <th key={c} scope="col" className="px-3 py-2.5 font-semibold whitespace-nowrap text-ink">
                     {c.replace(/_/g, " ")}
@@ -167,12 +169,16 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               )}
               {rows.map((r, i) => (
                 <tr key={i} className="align-top">
-                  {tab === "subscribers" && (
+                  {(tab === "subscribers" || tab === "support") && (
                     <td className="px-3 py-2 whitespace-nowrap text-ink">{emails[r.user_id as string] ?? "—"}</td>
                   )}
                   {def.columns.map((c) => (
                     <td key={c} className="max-w-xs px-3 py-2 text-muted">
-                      {formatCell(c, r[c], r.currency as string)}
+                      {tab === "support" && c === "admin_reply" ? (
+                        <TicketReply id={String(r.id)} reply={(r.admin_reply as string) ?? ""} status={String(r.status)} />
+                      ) : (
+                        formatCell(c, r[c], r.currency as string)
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -216,4 +222,30 @@ function monthlyRevenue(payments: { amount: number; paid_at: string | null }[], 
     if (m) m.total += p.amount;
   }
   return months;
+}
+
+/** Plain form POST, so replying works without client-side JavaScript. */
+function TicketReply({ id, reply, status }: { id: string; reply: string; status: string }) {
+  return (
+    <form action="/api/admin/tickets" method="post" className="min-w-[240px] space-y-2">
+      <input type="hidden" name="id" value={id} />
+      <label className="sr-only" htmlFor={`reply-${id}`}>
+        Reply
+      </label>
+      <textarea id={`reply-${id}`} name="admin_reply" rows={3} defaultValue={reply} className="input text-sm" />
+      <div className="flex gap-2">
+        <label className="sr-only" htmlFor={`status-${id}`}>
+          Status
+        </label>
+        <select id={`status-${id}`} name="status" defaultValue={status === "open" ? "answered" : status} className="input py-1.5 text-sm">
+          <option value="open">Open</option>
+          <option value="answered">Answered</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button type="submit" className={buttonClass("primary")}>
+          Save
+        </button>
+      </div>
+    </form>
+  );
 }

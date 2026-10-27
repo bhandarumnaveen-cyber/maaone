@@ -43,6 +43,13 @@ export const adminTables = {
     order: "created_at",
     ascending: false,
   },
+  support: {
+    title: "Support tickets",
+    table: "support_tickets",
+    columns: ["created_at", "id", "user_id", "subject", "message", "status", "admin_reply"],
+    order: "created_at",
+    ascending: false,
+  },
 } as const;
 
 export type AdminTableKey = keyof typeof adminTables;

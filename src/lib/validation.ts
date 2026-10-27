@@ -71,3 +71,33 @@ export function validateFeatureRequest(input: Record<string, unknown>) {
   if (data.email && !EMAIL.test(data.email)) errors.email = "Please enter a valid email or leave it blank.";
   return { data, errors, ok: Object.keys(errors).length === 0 };
 }
+
+const GSTIN = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+
+export function validateBilling(input: Record<string, unknown>, states: string[]) {
+  const data = {
+    business_name: str(input.business_name, 160),
+    gstin: str(input.gstin, 15).toUpperCase().replace(/\s/g, ""),
+    address_line1: str(input.address_line1, 200),
+    address_line2: str(input.address_line2, 200),
+    city: str(input.city, 80),
+    state: str(input.state, 80),
+    pincode: str(input.pincode, 6),
+  };
+  const errors: FieldErrors = {};
+  if (data.business_name.length < 2) errors.business_name = "Please enter your business name.";
+  if (data.gstin && !GSTIN.test(data.gstin)) errors.gstin = "That doesn't look like a valid GSTIN.";
+  if (data.address_line1.length < 3) errors.address_line1 = "Please enter your address.";
+  if (data.city.length < 2) errors.city = "Please enter your city.";
+  if (!states.includes(data.state)) errors.state = "Please choose your state.";
+  if (!/^[1-9][0-9]{5}$/.test(data.pincode)) errors.pincode = "Please enter a 6-digit PIN code.";
+  return { data, errors, ok: Object.keys(errors).length === 0 };
+}
+
+export function validateTicket(input: Record<string, unknown>) {
+  const data = { subject: str(input.subject, 200), message: str(input.message, 5000) };
+  const errors: FieldErrors = {};
+  if (data.subject.length < 3) errors.subject = "Please add a short subject.";
+  if (data.message.length < 10) errors.message = "Please describe the issue in a few words.";
+  return { data, errors, ok: Object.keys(errors).length === 0 };
+}
