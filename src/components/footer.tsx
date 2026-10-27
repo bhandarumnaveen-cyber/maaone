@@ -3,7 +3,9 @@ import { Mail } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "./icons";
 import { MaaLabsLogo, MaaOneLogo, NaveenCodesLogo } from "./logos";
 import { ButtonLink } from "./ui";
-import { LAUNCH_DATE_LABEL, SALES_OPEN, primaryCta, site } from "@/site.config";
+import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
+import { primaryCta } from "@/lib/cta";
 
 const columns = [
   {
@@ -30,8 +32,9 @@ const columns = [
 
 const linkClass = "text-sm text-muted transition-colors hover:text-brand-ink";
 
-export function Footer() {
-  const cta = primaryCta();
+export async function Footer() {
+  const s = await getSettings();
+  const cta = primaryCta(s);
   return (
     <footer className="border-t border-line bg-surface">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
@@ -42,9 +45,9 @@ export function Footer() {
             <br />
             {site.taglineEnglish}.
           </p>
-          {!SALES_OPEN && (
+          {!s.salesOpen && (
             <p className="mt-3 text-sm font-semibold text-accent-ink">
-              Launching {LAUNCH_DATE_LABEL}
+              Launching {s.launchDateLabel}
             </p>
           )}
           <ButtonLink href={cta.href} className="mt-4">
@@ -68,13 +71,13 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <a href={`mailto:${site.supportEmail}`} className={`${linkClass} break-all`}>
-                {site.supportEmail}
+              <a href={`mailto:${s.supportEmail}`} className={`${linkClass} break-all`}>
+                {s.supportEmail}
               </a>
             </li>
             <li>
-              <a href={site.whatsappLink} className={linkClass} target="_blank" rel="noopener noreferrer">
-                WhatsApp {site.whatsappDisplay}
+              <a href={s.whatsappLink} className={linkClass} target="_blank" rel="noopener noreferrer">
+                WhatsApp {s.whatsappDisplay}
               </a>
             </li>
           </ul>
@@ -94,20 +97,20 @@ export function Footer() {
             </p>
             <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
               <li>
-                <a href={`mailto:${site.supportEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
+                <a href={`mailto:${s.supportEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
                   <Mail className="h-4 w-4" aria-hidden="true" />
-                  {site.supportEmail}
+                  {s.supportEmail}
                 </a>
               </li>
               <li>
                 <a
-                  href={site.whatsappLink}
+                  href={s.whatsappLink}
                   className={`${linkClass} inline-flex items-center gap-1.5`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
-                  WhatsApp {site.whatsappDisplay}
+                  WhatsApp {s.whatsappDisplay}
                 </a>
               </li>
             </ul>
@@ -124,9 +127,9 @@ export function Footer() {
               <NaveenCodesLogo />
             </a>
             <p className="mt-3 text-sm">
-              <a href={`mailto:${site.developer.email}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
+              <a href={`mailto:${s.naveencodesEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
                 <Mail className="h-4 w-4" aria-hidden="true" />
-                {site.developer.email}
+                {s.naveencodesEmail}
               </a>
             </p>
           </div>
@@ -145,10 +148,10 @@ export function Footer() {
           <ul className="flex gap-2" aria-label="Social links">
             <li>
               <a
-                href={site.instagramUrl}
+                href={s.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Instagram ${site.instagramHandle}`}
+                aria-label={`Instagram ${s.instagramHandle}`}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line text-muted transition-colors hover:text-brand-ink"
               >
                 <InstagramIcon className="h-5 w-5" />
@@ -156,10 +159,10 @@ export function Footer() {
             </li>
             <li>
               <a
-                href={site.whatsappLink}
+                href={s.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`WhatsApp ${site.whatsappDisplay}`}
+                aria-label={`WhatsApp ${s.whatsappDisplay}`}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line text-muted transition-colors hover:text-brand-ink"
               >
                 <WhatsAppIcon className="h-5 w-5" />

@@ -1,14 +1,26 @@
 /**
  * Maa One — single source of truth for the website.
- * Plans, roadmap, modules, FAQs, contact details and the SALES_OPEN flag live here.
+ * Roadmap, modules, FAQs and brand credits live here. Live settings (sales_open,
+ * launch date, contacts) and plans come from Supabase; the values below are fallbacks.
  */
 
-/** false until launch: every buy/trial button becomes "Join the waitlist". */
-export const SALES_OPEN = false;
+import type { Plan } from "@/lib/types";
 
-/** Launch moment, Indian Standard Time. */
-export const LAUNCH_DATE_ISO = "2027-01-24T00:00:00+05:30";
-export const LAUNCH_DATE_LABEL = "24 January 2027";
+/**
+ * Fallbacks only. The live values come from Supabase (site_settings, plans)
+ * and are used instead whenever the database is reachable.
+ */
+export const fallbackSettings = {
+  salesOpen: false,
+  launchDate: "2027-01-24",
+  trialDays: 14,
+  gstRate: 18,
+  supportEmail: "hello@maalabs.in",
+  naveencodesEmail: "connect@naveencodes.com",
+  whatsapp: "+918053385815",
+  instagram: "maalabs18",
+  appUrl: "https://one.maalabs.in",
+};
 
 export const site = {
   name: "Maa One",
@@ -17,12 +29,6 @@ export const site = {
   description:
     "Maa One puts every lead from your website and WhatsApp in one inbox. AI drafts the reply in Hindi, Punjabi or English. You approve and win the customer.",
   url: "https://maaone.in",
-  appUrl: "https://one.maalabs.in",
-  supportEmail: "hello@maalabs.in",
-  whatsappDisplay: "+91 80533 85815",
-  whatsappLink: "https://wa.me/918053385815",
-  instagramHandle: "@maalabs18",
-  instagramUrl: "https://instagram.com/maalabs18",
   company: "Maa Labs Private Limited",
   companyShort: "Maa Labs",
   founder: "Naveen Goyal",
@@ -30,7 +36,6 @@ export const site = {
   developer: {
     name: "NaveenCodes",
     url: "https://naveencodes.com",
-    email: "connect@naveencodes.com",
   },
   creditLine: "Maa One — a Maa Labs product · Built by NaveenCodes",
   copyrightYear: 2026,
@@ -348,104 +353,67 @@ export function isAvailable(id: VersionId): boolean {
 }
 
 /* ------------------------------------------------------------------ */
-/* Plans                                                               */
+/* Plans (fallback — live plans come from the Supabase plans table)    */
 /* ------------------------------------------------------------------ */
 
-export type PlanId = "trial" | "starter" | "growth" | "pro" | "agency";
-
-export type Plan = {
-  id: PlanId;
-  name: string;
-  /** Monthly price, excluding GST. */
-  inr: number;
-  usd: number;
-  summary: string;
-  features: string[];
-  popular?: boolean;
-};
-
-export const TRIAL_DAYS = 14;
-/** Yearly billing = 10 × monthly (2 months free). */
-export const YEARLY_MONTHS_CHARGED = 10;
-export const GST_RATE = 0.18;
-
-export const plans: Plan[] = [
+export const fallbackPlans: Plan[] = [
   {
-    id: "trial",
-    name: "Free trial",
-    inr: 0,
-    usd: 0,
-    summary: `Everything in Growth, free for ${TRIAL_DAYS} days.`,
-    features: [
-      "Everything in Growth",
-      "Every live module, 3 users",
-      "Cancel before day 14 and pay nothing",
-    ],
-  },
-  {
-    id: "starter",
+    code: "starter",
     name: "Starter",
-    inr: 499,
-    usd: 12,
-    summary: "For a single owner who wants every lead in one place.",
-    features: [
-      "Inbox + CRM",
-      "Website forms + WhatsApp",
-      "AI lead scoring and reply drafts",
-      "1 user",
-    ],
+    tagline: "For a single owner getting started",
+    inrMonthly: 49900,
+    inrYearly: 499000,
+    usdMonthly: 1200,
+    usdYearly: 12000,
+    maxUsers: 1,
+    maxBusinesses: 1,
+    features: ["Inbox for website forms + WhatsApp", "AI lead scoring and reply drafts", "Basic CRM", "1 user"],
+    popular: false,
   },
   {
-    id: "growth",
+    code: "growth",
     name: "Growth",
-    inr: 1499,
-    usd: 29,
-    summary: "For a growing team that wants every tool as it ships.",
-    features: [
-      "Every live module",
-      "3 users",
-      "Mobile app",
-      "New modules added as they release",
-    ],
+    tagline: "Every live module for a small team",
+    inrMonthly: 149900,
+    inrYearly: 1499000,
+    usdMonthly: 2900,
+    usdYearly: 29000,
+    maxUsers: 3,
+    maxBusinesses: 1,
+    features: ["Everything in Starter", "Every live module", "3 users", "Mobile app"],
     popular: true,
   },
   {
-    id: "pro",
+    code: "pro",
     name: "Pro",
-    inr: 2999,
-    usd: 59,
-    summary: "For businesses with a field team and repeat customers.",
-    features: [
-      "Everything in Growth",
-      "10 users",
-      "Technician app",
-      "WhatsApp campaigns",
-      "Priority support",
-    ],
+    tagline: "For teams with technicians in the field",
+    inrMonthly: 299900,
+    inrYearly: 2999000,
+    usdMonthly: 5900,
+    usdYearly: 59000,
+    maxUsers: 10,
+    maxBusinesses: 1,
+    features: ["Everything in Growth", "10 users", "Technician app", "Campaigns", "Priority support"],
+    popular: false,
   },
   {
-    id: "agency",
+    code: "agency",
     name: "Agency",
-    inr: 4999,
-    usd: 99,
-    summary: "For agencies running Maa One for their clients.",
-    features: [
-      "Everything in Pro",
-      "Up to 10 businesses",
-      "White-label with your brand",
-    ],
+    tagline: "Run many businesses under your own brand",
+    inrMonthly: 499900,
+    inrYearly: 4999000,
+    usdMonthly: 9900,
+    usdYearly: 99000,
+    maxUsers: null,
+    maxBusinesses: 10,
+    features: ["Up to 10 businesses", "White-label branding", "Everything in Pro"],
+    popular: false,
   },
 ];
 
-export const paidPlans = plans.filter((p) => p.id !== "trial");
-
 type Cell = boolean | string;
-export const comparison: {
-  label: string;
-  values: Record<Exclude<PlanId, "trial">, Cell>;
-}[] = [
-  { label: "Users", values: { starter: "1", growth: "3", pro: "10", agency: "10 per business" } },
-  { label: "Businesses", values: { starter: "1", growth: "1", pro: "1", agency: "Up to 10" } },
+/** Feature rows for the comparison table, keyed by plan code. Users and businesses come from the plans table. */
+export const comparison: { label: string; values: Record<string, Cell> }[] = [
   { label: "Website form + WhatsApp inbox", values: { starter: true, growth: true, pro: true, agency: true } },
   { label: "AI lead scoring and reply drafts", values: { starter: true, growth: true, pro: true, agency: true } },
   { label: "CRM", values: { starter: "Basic", growth: "Full", pro: "Full", agency: "Full" } },
@@ -462,12 +430,14 @@ export const comparison: {
 /* Launch path                                                         */
 /* ------------------------------------------------------------------ */
 
-export const launchSteps = [
-  { title: "Join the waitlist", when: "Now", current: true },
-  { title: "Pilot with the first businesses", when: "December 2026" },
-  { title: `Paid launch with a ${TRIAL_DAYS}-day free trial`, when: LAUNCH_DATE_LABEL },
-  { title: "A new module every 2–3 months, small updates every 2 weeks", when: "After launch" },
-];
+export function launchSteps(s: { trialDays: number; launchDateLabel: string }) {
+  return [
+    { title: "Join the waitlist", when: "Now", current: true },
+    { title: "Pilot with the first businesses", when: "December 2026" },
+    { title: `Paid launch with a ${s.trialDays}-day free trial`, when: s.launchDateLabel },
+    { title: "A new module every 2–3 months, small updates every 2 weeks", when: "After launch" },
+  ];
+}
 
 /* ------------------------------------------------------------------ */
 /* FAQ                                                                 */
@@ -526,13 +496,3 @@ export const businessTypes = [
   "Marketing agency",
   "Other service business",
 ];
-
-/* ------------------------------------------------------------------ */
-/* Calls to action                                                     */
-/* ------------------------------------------------------------------ */
-
-export function primaryCta(plan: PlanId = "growth") {
-  return SALES_OPEN
-    ? { label: `Start ${TRIAL_DAYS}-day free trial`, href: `/signup?plan=${plan}` }
-    : { label: "Join the waitlist", href: `/waitlist?plan=${plan}` };
-}

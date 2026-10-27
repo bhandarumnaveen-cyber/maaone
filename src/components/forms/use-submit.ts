@@ -5,7 +5,7 @@ import type { FieldErrors } from "@/lib/validation";
 
 type State =
   | { status: "idle" | "submitting" }
-  | { status: "success"; preview: boolean; position?: number }
+  | { status: "success"; preview: boolean; position?: number; alreadyJoined?: boolean }
   | { status: "error"; message: string };
 
 export function useSubmit(endpoint: string) {
@@ -25,7 +25,12 @@ export function useSubmit(endpoint: string) {
       });
       const json = await res.json().catch(() => ({}));
       if (res.ok && json.ok) {
-        setState({ status: "success", preview: Boolean(json.preview), position: json.position });
+        setState({
+          status: "success",
+          preview: Boolean(json.preview),
+          position: json.position,
+          alreadyJoined: Boolean(json.alreadyJoined),
+        });
       } else if (res.status === 422 && json.errors) {
         setErrors(json.errors);
         setState({ status: "idle" });

@@ -1,4 +1,4 @@
-import { businessTypes, plans } from "@/site.config";
+import { businessTypes } from "@/site.config";
 
 export type FieldErrors = Record<string, string>;
 
@@ -35,7 +35,8 @@ export function validateWaitlist(input: Record<string, unknown>) {
   if (!phone) errors.phone = "Please enter a valid mobile number.";
   else data.phone = phone;
   if (!EMAIL.test(data.email)) errors.email = "Please enter a valid email address.";
-  if (!plans.some((p) => p.id === data.plan)) errors.plan = "Please choose a plan.";
+  // Plan codes are checked against the plans table in the API route; "" means not sure yet.
+  if (data.plan && !/^[a-z][a-z0-9_]{1,30}$/.test(data.plan)) errors.plan = "Please choose a plan.";
   return { data, errors, ok: Object.keys(errors).length === 0 };
 }
 

@@ -4,23 +4,29 @@ import { CheckCircle2 } from "lucide-react";
 import { buttonClass } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
-import { LAUNCH_DATE_LABEL, businessTypes, plans, type PlanId } from "@/site.config";
+import { useSettings } from "../settings-provider";
+import { businessTypes } from "@/site.config";
+import { formatMoney } from "@/lib/format";
+import type { Plan } from "@/lib/types";
 
-export function WaitlistForm({ defaultPlan = "growth" }: { defaultPlan?: PlanId }) {
+export function WaitlistForm({ plans, defaultPlan }: { plans: Plan[]; defaultPlan: string }) {
   const { state, errors, onSubmit } = useSubmit("/api/waitlist");
+  const { launchDateLabel } = useSettings();
 
   if (state.status === "success") {
     return (
       <div role="status" className="card p-6 text-center sm:p-8">
         <CheckCircle2 className="mx-auto h-12 w-12 text-success" aria-hidden="true" />
-        <h2 className="mt-4 text-2xl font-bold text-ink">You&rsquo;re on the list!</h2>
+        <h2 className="mt-4 text-2xl font-bold text-ink">
+          {state.alreadyJoined ? "You were already on the list!" : "You\u2019re on the list!"}
+        </h2>
         {state.position ? (
           <p className="mt-2 text-lg text-ink">
             Your waitlist position: <strong className="text-brand-ink">#{state.position}</strong>
           </p>
         ) : null}
         <p className="mt-2 text-muted">
-          We&rsquo;ll write to you before the pilot and again on launch day, {LAUNCH_DATE_LABEL}.
+          We&rsquo;ll write to you before the pilot and again on launch day, {launchDateLabel}.
         </p>
         {state.preview && (
           <p className="mt-4 rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent-ink">
@@ -95,9 +101,10 @@ export function WaitlistForm({ defaultPlan = "growth" }: { defaultPlan?: PlanId 
       </div>
       <Field id="plan" label="Plan you're interested in" error={errors.plan}>
         <select id="plan" name="plan" className="input" defaultValue={defaultPlan} {...errProps("plan", errors.plan)}>
+          <option value="">Not sure yet</option>
           {plans.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.id === "trial" ? "Not sure yet — start with the free trial" : `${p.name} — ₹${p.inr.toLocaleString("en-IN")}/month`}
+            <option key={p.code} value={p.code}>
+              {p.name} — {formatMoney(p.inrMonthly, "INR")}/month
             </option>
           ))}
         </select>

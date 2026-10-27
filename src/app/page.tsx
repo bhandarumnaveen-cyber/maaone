@@ -23,7 +23,8 @@ import { RoadmapTimeline } from "@/components/roadmap-timeline";
 import { Pricing } from "@/components/pricing";
 import { Faq } from "@/components/faq";
 import { ButtonLink, SectionHeading } from "@/components/ui";
-import { SALES_OPEN, TRIAL_DAYS, primaryCta } from "@/site.config";
+import { getPlans, getSettings } from "@/lib/settings";
+import { primaryCta } from "@/lib/cta";
 
 const sources = [
   { icon: Globe, label: "Website forms" },
@@ -61,8 +62,9 @@ const reasons = [
 /** Refresh the waitlist count every 5 minutes. */
 export const revalidate = 300;
 
-export default function Home() {
-  const cta = primaryCta();
+export default async function Home() {
+  const [settings, plans] = await Promise.all([getSettings(), getPlans()]);
+  const cta = primaryCta(settings);
   return (
     <>
       {/* 1. Hero */}
@@ -98,9 +100,9 @@ export default function Home() {
               </ButtonLink>
             </div>
             <p className="mt-4 text-sm text-muted">
-              {SALES_OPEN
-                ? `${TRIAL_DAYS}-day free trial · Cancel anytime`
-                : `No payment needed · ${TRIAL_DAYS}-day free trial at launch`}
+              {settings.salesOpen
+                ? `${settings.trialDays}-day free trial · Cancel anytime`
+                : `No payment needed · ${settings.trialDays}-day free trial at launch`}
             </p>
           </div>
 
@@ -217,7 +219,7 @@ export default function Home() {
             Prices exclude 18% GST. Yearly plans get 2 months free.
           </SectionHeading>
           <div className="mt-10">
-            <Pricing />
+            <Pricing plans={plans} />
           </div>
           <div className="mt-8 text-center">
             <Link href="/pricing" className="inline-flex items-center gap-1 font-semibold text-brand-ink hover:underline">

@@ -4,7 +4,7 @@ import { Faq } from "@/components/faq";
 import { FinalCta } from "@/components/final-cta";
 import { Pricing } from "@/components/pricing";
 import { PageHero } from "@/components/ui";
-import { LAUNCH_DATE_LABEL, SALES_OPEN, TRIAL_DAYS } from "@/site.config";
+import { getPlans, getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -14,25 +14,26 @@ export const metadata: Metadata = {
 };
 
 const notes = [
-  "Prices exclude 18% GST. You get a GST invoice from Maa Labs Private Limited for every payment.",
+  "Prices exclude GST (currently 18%). You get a GST invoice from Maa Labs Private Limited for every payment.",
   "WhatsApp message charges from Meta are passed through at cost, with no markup.",
-  "Yearly billing = 10 × the monthly price, so you get 2 months free.",
+  "Yearly plans cost 10 × the monthly price, so you get 2 months free.",
   "Cancel anytime. Your plan stays active until the end of the period you've paid for.",
   "One price per business, not per user.",
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const [s, plans] = await Promise.all([getSettings(), getPlans()]);
   return (
     <>
       <PageHero eyebrow="Pricing" title="Simple pricing for every stage">
-        {SALES_OPEN
-          ? `Start with a ${TRIAL_DAYS}-day free trial of everything in Growth.`
-          : `Sales open on ${LAUNCH_DATE_LABEL} with a ${TRIAL_DAYS}-day free trial. Join the waitlist to be first in line.`}
+        {s.salesOpen
+          ? `Start with a ${s.trialDays}-day free trial of everything in Growth.`
+          : `Sales open on ${s.launchDateLabel} with a ${s.trialDays}-day free trial. Join the waitlist to be first in line.`}
       </PageHero>
 
       <section className="section">
         <div className="container-page">
-          <Pricing />
+          <Pricing plans={plans} />
           <ul className="mx-auto mt-10 max-w-3xl space-y-2 text-sm text-muted">
             {notes.map((n) => (
               <li key={n} className="flex gap-2">
@@ -57,7 +58,7 @@ export default function PricingPage() {
             .
           </p>
           <div className="mt-10">
-            <ComparisonTable />
+            <ComparisonTable plans={plans} />
           </div>
         </div>
       </section>

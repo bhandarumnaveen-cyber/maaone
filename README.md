@@ -16,14 +16,17 @@ npm run build
 ```
 
 ## Configuration
-Everything content-related lives in [`src/site.config.ts`](src/site.config.ts):
-- `SALES_OPEN` — `false` turns every buy/trial button into "Join the waitlist"
-- launch date, contact details, versions (roadmap), modules (features), plans, comparison table, FAQs
+- **Supabase** (`supabase/maaone_schema.sql`, already applied) holds the live settings:
+  `site_settings` (`sales_open`, `launch_date`, `trial_days`, `gst_rate`, contacts, `app_url`) and `plans`.
+  The site re-reads them every 5 minutes, so edits in Supabase need no redeploy.
+- [`src/site.config.ts`](src/site.config.ts) holds the roadmap, modules, FAQs, brand credits and
+  fallback settings/plans used only if Supabase can't be reached.
+- Environment variables: see `.env.example`. `SUPABASE_SERVICE_ROLE_KEY` is server-only.
 
 ## Build phases
 1. **Done:** design system, Home, Features, Roadmap, Pricing (waitlist mode), About, Contact, footer, legal drafts
-2. Supabase auth, waitlist storage + position, feature requests, admin
+2. **Done:** Supabase settings/plans, OTP login, waitlist (`join_waitlist`), feature requests, contact messages, `/admin`
 3. Razorpay Subscriptions, webhooks, GST invoices, account area
 4. Blog and changelog (MDX), sitemap, robots, JSON-LD, OG images
 
-Forms currently validate and return `preview: true` without storing anything; Phase 2 connects them to Supabase.
+Admin: sign up via `/login`, then run the "MAKE YOURSELF ADMIN" line at the bottom of the schema file.

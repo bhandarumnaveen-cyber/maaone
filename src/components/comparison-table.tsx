@@ -1,7 +1,19 @@
 import { Check, Minus } from "lucide-react";
-import { comparison, paidPlans } from "@/site.config";
+import { comparison } from "@/site.config";
+import type { Plan } from "@/lib/types";
 
-export function ComparisonTable() {
+export function ComparisonTable({ plans }: { plans: Plan[] }) {
+  const rows = [
+    {
+      label: "Users",
+      values: Object.fromEntries(plans.map((p) => [p.code, p.maxUsers === null ? "No fixed limit" : String(p.maxUsers)])),
+    },
+    {
+      label: "Businesses",
+      values: Object.fromEntries(plans.map((p) => [p.code, p.maxBusinesses > 1 ? `Up to ${p.maxBusinesses}` : "1"])),
+    },
+    ...comparison,
+  ];
   return (
     <div className="relative overflow-x-auto rounded-xl border border-line bg-surface">
       <table className="w-full min-w-[640px] text-left text-sm">
@@ -11,23 +23,23 @@ export function ComparisonTable() {
             <th scope="col" className="sticky left-0 bg-surface px-4 py-4 font-semibold text-ink">
               Feature
             </th>
-            {paidPlans.map((p) => (
-              <th key={p.id} scope="col" className="px-4 py-4 text-center font-semibold text-ink">
+            {plans.map((p) => (
+              <th key={p.code} scope="col" className="px-4 py-4 text-center font-semibold text-ink">
                 {p.name}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-line">
-          {comparison.map((row) => (
+          {rows.map((row) => (
             <tr key={row.label}>
               <th scope="row" className="sticky left-0 bg-surface px-4 py-3 font-medium text-ink">
                 {row.label}
               </th>
-              {paidPlans.map((p) => {
-                const v = row.values[p.id as keyof typeof row.values];
+              {plans.map((p) => {
+                const v = row.values[p.code] ?? false;
                 return (
-                  <td key={p.id} className="px-4 py-3 text-center text-muted">
+                  <td key={p.code} className="px-4 py-3 text-center text-muted">
                     {v === true ? (
                       <>
                         <Check className="mx-auto h-5 w-5 text-success" aria-hidden="true" />

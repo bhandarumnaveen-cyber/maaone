@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { buttonClass } from "@/components/ui";
-import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "My account",
@@ -11,11 +12,12 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountPage() {
-  const supabase = await createClient();
+  const [supabase, cfg] = await Promise.all([createClient(), getSettings()]);
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/account");
+  const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
 
   return (
     <section className="container-page max-w-3xl py-14 sm:py-20">
@@ -24,10 +26,15 @@ export default async function AccountPage() {
           <h1 className="text-3xl font-bold tracking-tight text-ink">My account</h1>
           <p className="mt-1 text-muted">{user.email ?? user.phone}</p>
         </div>
-        <div className="flex gap-2">
-          <a href={site.appUrl} className={buttonClass("primary")}>
+        <div className="flex flex-wrap gap-2">
+          <a href={cfg.appUrl} className={buttonClass("primary")}>
             Open Maa One <ExternalLink className="h-4 w-4" aria-hidden="true" />
           </a>
+          {profile?.is_admin && (
+            <Link href="/admin" className={buttonClass("secondary")}>
+              Admin
+            </Link>
+          )}
           <form action="/auth/signout" method="post">
             <button type="submit" className={buttonClass("secondary")}>
               Log out

@@ -3,15 +3,16 @@ import { Mail } from "lucide-react";
 import { ContactForm } from "@/components/forms/contact-form";
 import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import { PageHero, buttonClass } from "@/components/ui";
-import { site } from "@/site.config";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Talk to the Maa One team. Email ${site.supportEmail} or WhatsApp ${site.whatsappDisplay}.`,
+  description: "Talk to the Maa One team by email, WhatsApp or Instagram.",
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const cfg = await getSettings();
   return (
     <>
       <PageHero eyebrow="Contact" title="Talk to us">
@@ -21,7 +22,7 @@ export default function ContactPage() {
         <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.5fr]">
           <div className="space-y-5">
             <a
-              href={site.whatsappLink}
+              href={cfg.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               className={`${buttonClass("primary", "lg")} w-full !bg-[#0E7A3E] hover:!bg-[#0B6532]`}
@@ -30,14 +31,14 @@ export default function ContactPage() {
               Chat on WhatsApp
             </a>
             <div className="card divide-y divide-line">
-              <ContactRow icon={<Mail className="h-5 w-5" aria-hidden="true" />} label="Email" href={`mailto:${site.supportEmail}`}>
-                {site.supportEmail}
+              <ContactRow icon={<Mail className="h-5 w-5" aria-hidden="true" />} label="Email" href={`mailto:${cfg.supportEmail}`}>
+                {cfg.supportEmail}
               </ContactRow>
-              <ContactRow icon={<WhatsAppIcon className="h-5 w-5" />} label="WhatsApp" href={site.whatsappLink} external>
-                {site.whatsappDisplay}
+              <ContactRow icon={<WhatsAppIcon className="h-5 w-5" />} label="WhatsApp" href={cfg.whatsappLink} external>
+                {cfg.whatsappDisplay}
               </ContactRow>
-              <ContactRow icon={<InstagramIcon className="h-5 w-5" />} label="Instagram" href={site.instagramUrl} external>
-                {site.instagramHandle}
+              <ContactRow icon={<InstagramIcon className="h-5 w-5" />} label="Instagram" href={cfg.instagramUrl} external>
+                {cfg.instagramHandle}
               </ContactRow>
             </div>
           </div>
