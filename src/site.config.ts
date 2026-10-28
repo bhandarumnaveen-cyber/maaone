@@ -28,7 +28,7 @@ export const site = {
   taglineEnglish: "The whole business, in one app",
   description:
     "Maa One puts every lead from your website and WhatsApp in one inbox. AI drafts the reply in Hindi, Punjabi or English. You approve and win the customer.",
-  url: "https://maaone.in",
+  url: "https://one.maalabs.in",
   company: "Maa Labs Private Limited",
   companyShort: "Maa Labs",
   founder: "Naveen Goyal",
