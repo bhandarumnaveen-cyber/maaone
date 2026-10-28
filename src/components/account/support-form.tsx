@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, errProps } from "../forms/field";
 import { useSubmit } from "../forms/use-submit";
 
@@ -30,7 +30,7 @@ export function SupportForm() {
       </Field>
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={buttonClass("primary")} disabled={state.status === "submitting"}>
-        {state.status === "submitting" ? "Sending…" : "Send to support"}
+        <BusyLabel busy={state.status === "submitting"} busyText="Sending…">Send to support</BusyLabel>
       </button>
     </form>
   );

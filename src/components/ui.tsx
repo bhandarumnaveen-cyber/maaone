@@ -20,9 +20,38 @@ const buttonStyles: Record<ButtonVariant, string> = {
 
 export function buttonClass(variant: ButtonVariant = "primary", size: "md" | "lg" = "md") {
   return clsx(
-    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 disabled:has-[[data-busy]]:cursor-wait disabled:has-[[data-busy]]:opacity-85",
     size === "lg" ? "px-5 py-3 text-base" : "px-4 py-2.5 text-sm",
     buttonStyles[variant],
+  );
+}
+
+/** Small spinning ring that takes the current text colour. */
+export function Spinner({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={clsx("h-4 w-4 shrink-0 animate-spin", className)}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * Button text that swaps to a spinner and a "working" label while busy. Screen readers hear the
+ * new label through aria-live; the label fades in so the swap doesn't jump.
+ */
+export function BusyLabel({ busy, busyText, children }: { busy: boolean; busyText: string; children: ReactNode }) {
+  return (
+    <span aria-live="polite" className="inline-flex items-center justify-center gap-2">
+      {busy ? (
+        <span key="busy" data-busy className="inline-flex animate-fade-in items-center gap-2">
+          <Spinner />
+          {busyText}
+        </span>
+      ) : (
+        children
+      )}
+    </span>
   );
 }
 

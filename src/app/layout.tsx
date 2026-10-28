@@ -4,6 +4,8 @@ import "./globals.css";
 import { themeScript } from "@/lib/theme";
 import { SettingsProvider } from "@/components/settings-provider";
 import { JsonLd } from "@/components/json-ld";
+import { NavigationProgress } from "@/components/navigation-progress";
+import { Suspense } from "react";
 import { getSettings } from "@/lib/settings";
 import { site } from "@/site.config";
 
@@ -64,6 +66,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             brand: { "@type": "Brand", name: site.name },
           }}
         />
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         <SettingsProvider value={settings}>
           {children}
         </SettingsProvider>

@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
 import { Turnstile } from "./turnstile";
@@ -49,7 +49,7 @@ export function FeatureRequestForm() {
       <Turnstile />
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={buttonClass("primary")} disabled={state.status === "submitting"}>
-        {state.status === "submitting" ? "Sending…" : "Request this feature"}
+        <BusyLabel busy={state.status === "submitting"} busyText="Sending…">Request this feature</BusyLabel>
       </button>
     </form>
   );

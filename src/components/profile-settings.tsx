@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, LogOut, MonitorSmartphone } from "lucide-react";
-import { buttonClass } from "./ui";
+import { buttonClass, BusyLabel } from "./ui";
 import { Field, FormError, errProps } from "./forms/field";
 import type { FieldErrors } from "@/lib/validation";
+import { PendingSubmit } from "@/components/pending-submit";
 
 async function postJson(url: string, body: object) {
   const res = await fetch(url, {
@@ -104,7 +105,7 @@ export function ProfileSettings({
             {error && <FormError message={error} />}
             <div className="flex items-center gap-3">
               <button type="submit" className={buttonClass("primary")} disabled={state === "saving"}>
-                {state === "saving" ? "Saving…" : "Save changes"}
+                <BusyLabel busy={state === "saving"} busyText="Saving…">Save changes</BusyLabel>
               </button>
               {state === "saved" && <Saved>Saved</Saved>}
             </div>
@@ -151,7 +152,7 @@ export function ProfileSettings({
                 )}
               </div>
               <button type="submit" className={buttonClass("secondary")} disabled={emailState === "saving"}>
-                {emailState === "saving" ? "Sending…" : email ? "Change email" : "Add email"}
+                <BusyLabel busy={emailState === "saving"} busyText="Sending…">{email ? "Change email" : "Add email"}</BusyLabel>
               </button>
             </form>
           )}
@@ -170,15 +171,15 @@ export function ProfileSettings({
         <p className="mt-0.5 text-sm text-muted">Log out here, or from every phone and computer at once.</p>
         <div className="mt-5 space-y-3">
           <form action="/auth/signout" method="post">
-            <button type="submit" className={`${buttonClass("primary")} w-full`}>
+            <PendingSubmit busyText="Logging out…" className={`${buttonClass("primary")} w-full`}>
               <LogOut className="h-4 w-4" aria-hidden="true" /> Log out
-            </button>
+            </PendingSubmit>
           </form>
           <form action="/auth/signout" method="post">
             <input type="hidden" name="scope" value="global" />
-            <button type="submit" className={`${buttonClass("secondary")} w-full`}>
+            <PendingSubmit busyText="Logging out everywhere…" className={`${buttonClass("secondary")} w-full`}>
               <MonitorSmartphone className="h-4 w-4" aria-hidden="true" /> Log out of all devices
-            </button>
+            </PendingSubmit>
           </form>
         </div>
       </section>

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { createClient } from "@/lib/supabase/client";
 import { normalisePhone } from "@/lib/validation";
-import { buttonClass } from "../ui";
+import { BusyLabel, buttonClass } from "../ui";
+import { startNavigationProgress } from "../navigation-progress";
 import { Field, FormError } from "./field";
 
 type Method = "email" | "phone";
@@ -17,6 +18,7 @@ export function OtpLogin({ next }: { next: string }) {
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function sendCode(e: React.FormEvent) {
@@ -49,11 +51,14 @@ export function OtpLogin({ next }: { next: string }) {
       method === "email"
         ? await supabase.auth.verifyOtp({ email: sentTo, token, type: "email" })
         : await supabase.auth.verifyOtp({ phone: sentTo, token, type: "sms" });
-    setBusy(false);
     if (error) {
+      setBusy(false);
       setError("That code didn't work. Check it and try again, or request a new one.");
       return;
     }
+    // Stay busy until the next page replaces this one, so the button doesn't flash back to "Log in".
+    setLoggedIn(true);
+    startNavigationProgress();
     router.replace(next);
     router.refresh();
   }
@@ -79,11 +84,14 @@ export function OtpLogin({ next }: { next: string }) {
         </Field>
         {error && <FormError message={error} />}
         <button type="submit" className={`${buttonClass("primary", "lg")} w-full`} disabled={busy || code.length < 6}>
-          {busy ? "Checking…" : "Log in"}
+          <BusyLabel busy={busy} busyText={loggedIn ? "Logging you in…" : "Checking…"}>
+            Log in
+          </BusyLabel>
         </button>
         <button
           type="button"
-          className="w-full text-sm font-medium text-brand-ink hover:underline"
+          className="w-full text-sm font-medium text-brand-ink hover:underline disabled:opacity-50"
+          disabled={busy}
           onClick={() => {
             setSentTo(null);
             setCode("");
@@ -133,7 +141,9 @@ export function OtpLogin({ next }: { next: string }) {
       </Field>
       {error && <FormError message={error} />}
       <button type="submit" className={`${buttonClass("primary", "lg")} w-full`} disabled={busy}>
-        {busy ? "Sending…" : "Send login code"}
+        <BusyLabel busy={busy} busyText="Sending code…">
+          Send login code
+        </BusyLabel>
       </button>
     </form>
   );

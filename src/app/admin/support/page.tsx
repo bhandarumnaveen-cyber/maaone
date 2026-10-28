@@ -4,6 +4,7 @@ import { Avatar, EmptyState, PageHeader, istDateTime } from "@/components/dashbo
 import { ListToolbar, Pager } from "@/components/admin/list-toolbar";
 import { StatusSelect } from "@/components/admin/status-select";
 import { buttonClass } from "@/components/ui";
+import { PendingSubmit } from "@/components/pending-submit";
 
 export const metadata = { title: "Support tickets" };
 
@@ -60,9 +61,9 @@ export default async function SupportAdmin({ searchParams }: { searchParams: Pro
                     {r.admin_reply ? "Your reply (edit to update)" : "Reply"}
                   </label>
                   <textarea id={`reply-${r.id}`} name="admin_reply" rows={3} defaultValue={r.admin_reply ?? ""} className="input text-sm" required />
-                  <button type="submit" className={buttonClass("primary")}>
+                  <PendingSubmit busyText="Sending…" className={buttonClass("primary")}>
                     {r.admin_reply ? "Update reply" : "Send reply"}
-                  </button>
+                  </PendingSubmit>
                 </form>
               </li>
             );

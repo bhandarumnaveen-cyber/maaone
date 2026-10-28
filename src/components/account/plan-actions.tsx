@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { FormError } from "../forms/field";
 import { formatMoney } from "@/lib/format";
 import type { Plan } from "@/lib/types";
@@ -116,7 +116,7 @@ export function PlanActions({
           {error && <FormError message={error} />}
           <div className="flex gap-2">
             <button type="submit" className={buttonClass("primary")} disabled={busy}>
-              {busy ? "Changing…" : "Change plan"}
+              <BusyLabel busy={busy} busyText="Changing…">Change plan</BusyLabel>
             </button>
             <button type="button" className={buttonClass("ghost")} onClick={() => setMode("idle")}>
               Back
@@ -135,7 +135,7 @@ export function PlanActions({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-xl bg-red-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60 disabled:has-[[data-busy]]:cursor-wait disabled:has-[[data-busy]]:opacity-85"
               disabled={busy}
               onClick={async () => {
                 const r = await post("/api/subscription/cancel");
@@ -146,7 +146,7 @@ export function PlanActions({
                 }
               }}
             >
-              {busy ? "Cancelling…" : "Yes, cancel"}
+              <BusyLabel busy={busy} busyText="Cancelling…">Yes, cancel</BusyLabel>
             </button>
             <button type="button" className={buttonClass("secondary")} onClick={() => setMode("idle")}>
               Keep my plan

@@ -12,6 +12,7 @@ import { useSettings } from "./settings-provider";
 import { primaryCta } from "@/lib/cta";
 import { UserMenu, type UserMenuLink } from "./user-menu";
 import { useSessionUser } from "./use-session-user";
+import { PendingSubmit } from "@/components/pending-submit";
 
 const nav = [
   { href: "/features", label: "Features" },
@@ -127,9 +128,12 @@ export function Header() {
                     </ButtonLink>
                   )}
                   <form action="/auth/signout" method="post">
-                    <button type="submit" className="w-full rounded-xl px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
+                    <PendingSubmit
+                      busyText="Logging out…"
+                      className="inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 disabled:cursor-wait dark:text-red-400 dark:hover:bg-red-950/40"
+                    >
                       Log out
-                    </button>
+                    </PendingSubmit>
                   </form>
                 </>
               ) : (

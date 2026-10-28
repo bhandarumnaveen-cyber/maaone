@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, errProps } from "../forms/field";
 import { indianStates } from "@/lib/states";
 import type { FieldErrors } from "@/lib/validation";
@@ -45,7 +45,7 @@ function SaveBar({ state, error }: { state: "idle" | "saving" | "saved"; error: 
   return (
     <div className="flex flex-wrap items-center gap-3 border-t border-line pt-5">
       <button type="submit" className={buttonClass("primary")} disabled={state === "saving"}>
-        {state === "saving" ? "Saving…" : "Save changes"}
+        <BusyLabel busy={state === "saving"} busyText="Saving…">Save changes</BusyLabel>
       </button>
       {state === "saved" && (
         <span role="status" className="inline-flex items-center gap-1.5 text-sm font-medium text-success">
