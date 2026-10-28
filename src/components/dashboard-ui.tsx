@@ -63,7 +63,7 @@ export function StatCard({
       </div>
     </>
   );
-  const cls = "card flex items-center gap-4 p-5 shadow-sm shadow-slate-900/[0.03]";
+  const cls = "card flex min-w-0 items-center gap-4 p-5 shadow-sm shadow-slate-900/[0.03]";
   return href ? (
     <Link href={href} className={clsx(cls, "transition-colors hover:border-brand-ink/40")}>
       {body}
@@ -90,7 +90,7 @@ export function Panel({
 }) {
   const isLink = action && typeof action === "object" && "href" in (action as object);
   return (
-    <section className={clsx("card shadow-sm shadow-slate-900/[0.03]", className)}>
+    <section className={clsx("card min-w-0 shadow-sm shadow-slate-900/[0.03]", className)}>
       {(title || action) && (
         <div className="flex items-start justify-between gap-3 px-5 pt-5">
           <div>
@@ -170,10 +170,10 @@ export function BarChart({
   label: string;
 }) {
   const max = Math.max(1, ...data.map((d) => d.value));
-  const every = Math.ceil(data.length / 8);
+  const every = Math.ceil(data.length / 5);
   return (
     <figure>
-      <div className="flex items-end gap-1 sm:gap-1.5" style={{ height }} role="img" aria-label={label}>
+      <div className="flex items-end gap-[3px] sm:gap-1.5" style={{ height }} role="img" aria-label={label}>
         {data.map((d, i) => {
           const last = highlightLast && i === data.length - 1;
           return (
@@ -192,12 +192,25 @@ export function BarChart({
           );
         })}
       </div>
-      <div className="mt-2 flex gap-1 text-[10px] text-muted sm:gap-1.5 sm:text-[11px]" aria-hidden="true">
-        {data.map((d, i) => (
-          <span key={d.key} className="flex-1 truncate text-center">
-            {i % every === 0 || i === data.length - 1 ? d.label : ""}
-          </span>
-        ))}
+      <div className="relative mt-2 h-4 text-[10px] text-muted sm:text-[11px]" aria-hidden="true">
+        {data.map((d, i) =>
+          // Every few bars plus the last one; skip a label that would crowd the last.
+          (i % every === 0 && data.length - 1 - i >= every * 0.6) || i === data.length - 1 ? (
+            <span
+              key={d.key}
+              className="absolute top-0 whitespace-nowrap"
+              style={
+                i === 0
+                  ? { left: 0 }
+                  : i === data.length - 1
+                    ? { right: 0 }
+                    : { left: `${((i + 0.5) / data.length) * 100}%`, transform: "translateX(-50%)" }
+              }
+            >
+              {d.label}
+            </span>
+          ) : null,
+        )}
       </div>
       <table className="sr-only">
         <caption>{label}</caption>
@@ -237,7 +250,8 @@ export function Donut({
         .join(", ")
     : "var(--line) 0deg 360deg";
   return (
-    <div className="flex flex-col items-center gap-5 sm:flex-row">
+    <div className="@container">
+    <div className="flex flex-col items-center gap-5 @md:flex-row">
       <div
         className="relative h-36 w-36 shrink-0 rounded-full"
         style={{ background: `conic-gradient(${stops})` }}
@@ -260,6 +274,7 @@ export function Donut({
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 }

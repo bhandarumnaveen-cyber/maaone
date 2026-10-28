@@ -38,8 +38,14 @@ export const site = {
     url: "https://naveencodes.com",
   },
   creditLine: "Maa One — a Maa Labs product · Built by NaveenCodes",
-  /** Set to the uploaded brand logo (e.g. public/brand/maa-one-logo.png) to replace the drawn lotus + wordmark. */
-  logoImage: null as null | { src: string; width: number; height: number },
+  /** Brand logo (ML | Maa One), built from assets/source by scripts/build-images.mjs. */
+  logo: {
+    srcSet: "/brand/maa-one-logo-280.webp 280w, /brand/maa-one-logo-560.webp 560w, /brand/maa-one-logo-840.webp 840w",
+    src: "/brand/maa-one-logo-560.webp",
+    png: "/brand/maa-one-logo.png",
+    width: 560,
+    height: 177,
+  },
   copyrightYear: 2026,
 };
 

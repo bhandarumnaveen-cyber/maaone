@@ -1,8 +1,9 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
-/** Returns a Supabase client for the logged-in admin, or why access is refused. */
-export async function requireAdmin() {
+/** Returns a Supabase client for the logged-in admin, or why access is refused. Cached per request. */
+export const requireAdmin = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -11,7 +12,7 @@ export async function requireAdmin() {
   const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
   if (!profile?.is_admin) return { status: "forbidden" as const };
   return { status: "ok" as const, supabase, user };
-}
+});
 
 /**
  * Admin lists and their CSV exports. Rows are read under RLS as the admin.

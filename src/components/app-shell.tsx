@@ -20,7 +20,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { LotusMark } from "./lotus-mark";
+import { BrandLogo } from "./logos";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu, type UserMenuLink } from "./user-menu";
 
@@ -64,14 +64,9 @@ export function AppShell({
   const sidebar = (
     <div className="flex h-full flex-col bg-[linear-gradient(180deg,#1e1b4b_0%,#2a2580_55%,#312e81_100%)] text-white">
       <div className="flex items-center justify-between px-5 pt-6 pb-5">
-        <Link href="/" className="flex items-center gap-2.5 rounded-lg" aria-label="Maa One website">
-          <LotusMark className="h-10 w-10" />
-          <span className="flex flex-col leading-none">
-            <span className="text-xl font-extrabold tracking-tight">
-              Maa <span className="text-amber-400">One</span>
-            </span>
-            <span className="mt-1 text-[11px] font-medium text-indigo-200">{area}</span>
-          </span>
+        <Link href="/" className="flex flex-col rounded-lg" aria-label="Maa One website">
+          <BrandLogo className="h-12" />
+          <span className="mt-2 text-[11px] font-semibold tracking-[0.14em] text-indigo-200 uppercase">{area}</span>
         </Link>
         <button
           type="button"
@@ -165,12 +160,9 @@ export function AppShell({
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="flex items-center gap-2 lg:hidden">
-          <LotusMark className="h-7 w-7" />
-          <span className="font-extrabold tracking-tight text-ink">
-            Maa <span className="text-logo-accent">One</span>
-          </span>
-        </span>
+        <Link href="/" className="lg:hidden" aria-label="Maa One website">
+          <BrandLogo className="h-9" />
+        </Link>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <ThemeToggle />
           <UserMenu name={user.name} detail={user.detail} links={menuLinks} />

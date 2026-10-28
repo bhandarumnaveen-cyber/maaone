@@ -22,5 +22,5 @@ export async function POST(req: Request) {
     console.error("[admin tickets]", error);
     return new NextResponse("Couldn't save reply", { status: 500 });
   }
-  return NextResponse.redirect(new URL("/admin?tab=support", req.url), { status: 303 });
+  return NextResponse.redirect(new URL("/admin/support", req.url), { status: 303 });
 }

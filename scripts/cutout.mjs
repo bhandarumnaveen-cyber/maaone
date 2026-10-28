@@ -26,9 +26,12 @@ while (stack.length) {
   push(x + 1, y); push(x - 1, y); push(x, y + 1); push(x, y - 1);
 }
 
-// Background brightness reference: brightest border pixel.
-let bg = 0;
-for (let p = 0; p < w * h; p++) if (seen[p]) bg = Math.max(bg, lum(p * 4));
+// Background brightness reference: the median border pixel (one bright speck must not shift it).
+const border = [];
+for (let x = 0; x < w; x++) border.push(lum(x * 4), lum(((h - 1) * w + x) * 4));
+for (let y = 0; y < h; y++) border.push(lum(y * w * 4), lum((y * w + w - 1) * 4));
+border.sort((a, b) => a - b);
+const bg = border[border.length >> 1];
 for (let p = 0; p < w * h; p++) {
   if (!seen[p]) continue;
   const i = p * 4;

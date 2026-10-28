@@ -51,7 +51,7 @@ export function emailLayout(opts: {
     : "";
   return `<!doctype html><html><body style="margin:0;background:#FAFAF9;font-family:Inter,Segoe UI,Arial,sans-serif">
 <div style="max-width:560px;margin:0 auto;padding:32px 20px">
-<p style="font-size:20px;font-weight:800;color:#0f172a;margin:0 0 24px">Maa <span style="color:#3730A3">One</span></p>
+<p style="margin:0 0 24px"><img src="${site.url}${site.logo.png}" width="180" height="57" alt="Maa One" style="display:block;border:0"></p>
 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px">
 <h1 style="font-size:22px;color:#0f172a;margin:0 0 16px">${esc(opts.heading)}</h1>${p}${button}
 </div>

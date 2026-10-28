@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { groupIcons } from "@/components/feature-blocks";
 import { FinalCta } from "@/components/final-cta";
-import { InvoiceMockup, LaptopDashboardMockup, PhoneInboxMockup, ScreenshotPlaceholder } from "@/components/mockups";
+import { ScreenshotPlaceholder } from "@/components/mockups";
+import { AppImage } from "@/components/app-image";
 import { PageHero, ReleaseBadge } from "@/components/ui";
 import { moduleGroups, versionById } from "@/site.config";
 
@@ -12,10 +13,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/features" },
 };
 
+const phone = "mx-auto w-[240px] drop-shadow-2xl";
 const showcase = {
-  win: <PhoneInboxMockup className="mx-auto w-[220px]" />,
-  paid: <InvoiceMockup className="mx-auto" />,
-  platform: <LaptopDashboardMockup className="mx-auto max-w-md" />,
+  win: <AppImage name="phone-ai-draft" sizes="240px" className={phone} />,
+  work: <AppImage name="phone-technician" sizes="240px" className={phone} />,
+  paid: <AppImage name="phone-invoice" sizes="240px" className={phone} />,
+  grow: <AppImage name="phone-home" sizes="240px" className={phone} />,
+  platform: <AppImage name="laptop-crm" sizes="480px" className="mx-auto w-full max-w-lg drop-shadow-2xl" />,
 } as const;
 
 export default function FeaturesPage() {
@@ -26,7 +30,7 @@ export default function FeaturesPage() {
         below shows exactly when it ships.
       </PageHero>
 
-      <nav aria-label="Feature groups" className="sticky top-16 z-30 border-b border-line bg-bg/90 backdrop-blur">
+      <nav aria-label="Feature groups" className="sticky top-[72px] z-30 border-b border-line bg-bg/90 backdrop-blur">
         <ul className="container-page flex gap-2 overflow-x-auto py-3">
           {moduleGroups.map((g) => (
             <li key={g.id}>
@@ -62,7 +66,7 @@ export default function FeaturesPage() {
                   </h2>
                   <p className="lead mt-2">{group.blurb}</p>
                 </div>
-                {visual && <div className="hidden lg:block">{visual}</div>}
+                {visual && <div>{visual}</div>}
               </div>
               <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {group.modules.map((m) => (
