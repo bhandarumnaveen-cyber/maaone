@@ -47,7 +47,7 @@ export default function OpengraphImage() {
             Every website and WhatsApp lead in one inbox. AI drafts the reply in Hindi, Punjabi or English.
           </div>
         </div>
-        <div style={{ fontSize: 24, color: "#c7d2fe" }}>maaone.in · A Maa Labs product · Built by NaveenCodes</div>
+        <div style={{ fontSize: 24, color: "#c7d2fe" }}>one.maalabs.in · A Maa Labs product · Built by NaveenCodes</div>
       </div>
     ),
     size,
