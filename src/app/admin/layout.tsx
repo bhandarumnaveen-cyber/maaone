@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: "/admin/profile", label: "My profile", icon: "profile" },
         { href: "/account", label: "My account", icon: "account" },
         { href: "/", label: "View website", icon: "site" },
-        { href: settings.appUrl, label: "Open Maa One app", icon: "app", external: true },
+        ...(settings.appReady ? [{ href: settings.appUrl, label: "Open Maa One app", icon: "app" as const, external: true }] : []),
       ]}
       nav={[
         { href: "/admin", label: "Overview", icon: "dashboard" },

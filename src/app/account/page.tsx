@@ -41,7 +41,7 @@ export default async function AccountOverview({ searchParams }: { searchParams: 
 
       {params.welcome && (
         <p role="status" className="mb-6 rounded-xl bg-success-soft px-4 py-3 text-success">
-          Welcome to Maa One! Your subscription is set up. Tap &ldquo;Open Maa One&rdquo; to get started.
+          Welcome to Maa One! Your subscription is set up.
         </p>
       )}
       {params.pending && !params.welcome && (
@@ -55,9 +55,15 @@ export default async function AccountOverview({ searchParams }: { searchParams: 
         <section className="relative flex flex-col overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#f6f4ff,#fff6ea)] p-6 dark:bg-[linear-gradient(160deg,#151335,#1d1408)]">
           <h2 className="text-lg font-bold text-ink">Run your business from your phone</h2>
           <p className="mt-1 text-sm text-muted">Install Maa One on your phone from the browser — no app store needed.</p>
-          <a href={settings.appUrl} className="mt-4 inline-flex items-center gap-1 self-start text-sm font-semibold text-brand-ink hover:underline">
-            Open Maa One <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
+          {settings.appReady ? (
+            <a href={settings.appUrl} className="mt-4 inline-flex items-center gap-1 self-start text-sm font-semibold text-brand-ink hover:underline">
+              Open Maa One <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          ) : (
+            <p className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-accent-soft px-3 py-1 text-sm font-semibold text-accent-ink">
+              App opens on {settings.launchDateLabel}
+            </p>
+          )}
           <AppImage name="phone-home" sizes="180px" className="mx-auto -mb-24 mt-4 w-44 drop-shadow-xl" />
         </section>
       </div>

@@ -13,6 +13,8 @@ export type Settings = {
   instagramHandle: string;
   instagramUrl: string;
   appUrl: string;
+  /** False while app_url still points at this website (the product isn't live yet). */
+  appReady: boolean;
 };
 
 /** A paid plan. All amounts are in paise (INR) or cents (USD). */

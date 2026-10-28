@@ -51,7 +51,7 @@ export function AppShell({
   area: string;
   nav: ShellNavItem[];
   user: { name: string; detail: string };
-  primaryLink: { href: string; label: string };
+  primaryLink: { href: string; label: string; external?: boolean };
   menuLinks: UserMenuLink[];
   children: React.ReactNode;
 }) {
@@ -115,7 +115,7 @@ export function AppShell({
             href={primaryLink.href}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-amber-400 px-2 py-2 text-xs font-bold text-slate-950 hover:bg-amber-300"
           >
-            {primaryLink.label} <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            {primaryLink.label} {primaryLink.external && <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />}
           </a>
           <form action="/auth/signout" method="post">
             <button

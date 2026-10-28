@@ -31,7 +31,7 @@ export function Header() {
     { href: "/account", label: "My account", icon: "account" },
     { href: "/account/profile", label: "My profile", icon: "profile" },
     ...(user?.isAdmin ? [{ href: "/admin", label: "Admin console", icon: "admin" as const }] : []),
-    { href: settings.appUrl, label: "Open Maa One app", icon: "app", external: true },
+    ...(settings.appReady ? [{ href: settings.appUrl, label: "Open Maa One app", icon: "app" as const, external: true }] : []),
   ];
 
   useEffect(() => setOpen(false), [pathname]);

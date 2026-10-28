@@ -3,7 +3,7 @@ import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
-import { fallbackPlans, fallbackSettings } from "@/site.config";
+import { fallbackPlans, fallbackSettings, site } from "@/site.config";
 import type { Plan, Settings } from "@/lib/types";
 
 const REVALIDATE_SECONDS = 300;
@@ -14,11 +14,20 @@ export function formatIndianPhone(e164: string) {
   return d.length === 12 && d.startsWith("91") ? `+91 ${d.slice(2, 7)} ${d.slice(7)}` : e164;
 }
 
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).host;
+  } catch {
+    return "";
+  }
+};
+
 function buildSettings(raw: Record<string, unknown>): Settings {
   const str = (k: string, d: string) => (typeof raw[k] === "string" && raw[k] ? (raw[k] as string) : d);
   const num = (k: string, d: number) => (Number.isFinite(Number(raw[k])) && raw[k] !== null ? Number(raw[k]) : d);
 
   const launchDay = str("launch_date", fallbackSettings.launchDate);
+  const appUrl = str("app_url", fallbackSettings.appUrl);
   const whatsapp = str("whatsapp", fallbackSettings.whatsapp);
   const instagram = str("instagram", fallbackSettings.instagram).replace(/^@/, "");
   return {
@@ -39,7 +48,8 @@ function buildSettings(raw: Record<string, unknown>): Settings {
     whatsappLink: `https://wa.me/${whatsapp.replace(/\D/g, "")}`,
     instagramHandle: `@${instagram}`,
     instagramUrl: `https://instagram.com/${instagram}`,
-    appUrl: str("app_url", fallbackSettings.appUrl),
+    appUrl,
+    appReady: hostOf(appUrl) !== "" && hostOf(appUrl) !== hostOf(site.url),
   };
 }
 
