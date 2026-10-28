@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ExternalLink, Globe, LayoutDashboard, LogOut, Shield, UserRound } from "lucide-react";
 import clsx from "clsx";
+import { PendingSubmit } from "@/components/pending-submit";
 
 export type UserMenuLink = { href: string; label: string; icon: "profile" | "account" | "admin" | "site" | "app"; external?: boolean };
 
@@ -80,9 +81,13 @@ export function UserMenu({ name, detail, links, compact }: { name: string; detai
             })}
           </div>
           <form action="/auth/signout" method="post" className="border-t border-line p-1.5">
-            <button type="submit" role="menuitem" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
+            <PendingSubmit
+              busyText="Logging out…"
+              role="menuitem"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-wait dark:text-red-400 dark:hover:bg-red-950/40"
+            >
               <LogOut className="h-4 w-4" aria-hidden="true" /> Log out
-            </button>
+            </PendingSubmit>
           </form>
         </div>
       )}

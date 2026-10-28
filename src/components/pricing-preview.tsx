@@ -8,6 +8,7 @@ export function PricingPreview({ plans, settings }: { plans: Plan[]; settings: S
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
       <CardShell
+        wide
         name="Free trial"
         summary={`Everything in Growth, free for ${settings.trialDays} days.`}
         price="₹0"

@@ -6,9 +6,10 @@ import clsx from "clsx";
 import { Check, Lock } from "lucide-react";
 import { BillingForm, type Billing } from "./forms/billing-form";
 import { FormError } from "./forms/field";
-import { buttonClass } from "./ui";
+import { buttonClass, BusyLabel } from "./ui";
 import { formatMoney } from "@/lib/format";
 import type { Plan, Settings } from "@/lib/types";
+import { startNavigationProgress } from "./navigation-progress";
 
 type CheckoutOptions = {
   keyId: string;
@@ -61,6 +62,7 @@ export function Checkout({
   const [planCode, setPlanCode] = useState(initialPlan);
   const [period, setPeriod] = useState(initialPeriod);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const plan = plans.find((p) => p.code === planCode) ?? plans[0];
@@ -96,12 +98,14 @@ export function Checkout({
       theme: { color: "#3730A3" },
       modal: { ondismiss: () => setBusy(false) },
       handler: async (r: RazorpayResponse) => {
+        setConfirming(true);
         const v = await fetch("/api/checkout/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(r),
         }).catch(() => null);
         // Even if this check is slow, the webhook will activate the subscription.
+        startNavigationProgress();
         router.push(v?.ok ? "/account?welcome=1" : "/account?pending=1");
       },
     });
@@ -170,8 +174,10 @@ export function Checkout({
               </div>
               {error && <FormError message={error} />}
               <button type="button" onClick={pay} disabled={busy} className={`${buttonClass("primary", "lg")} w-full`}>
-                <Lock className="h-4 w-4" aria-hidden="true" />
-                {busy ? "Opening secure checkout…" : trialEligible ? `Start ${settings.trialDays}-day free trial` : "Subscribe"}
+                <BusyLabel busy={busy} busyText={confirming ? "Confirming your payment…" : "Opening secure checkout…"}>
+                  <Lock className="h-4 w-4" aria-hidden="true" />
+                  {trialEligible ? `Start ${settings.trialDays}-day free trial` : "Subscribe"}
+                </BusyLabel>
               </button>
               <p className="text-center text-xs text-muted">
                 Secure payment by Razorpay · UPI, cards and netbanking · Cancel anytime from your account

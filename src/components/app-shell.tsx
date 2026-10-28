@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { BrandLogo } from "./logos";
+import { PendingSubmit } from "./pending-submit";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu, type UserMenuLink } from "./user-menu";
 
@@ -120,14 +121,15 @@ export function AppShell({
             {primaryLink.label} {primaryLink.external && <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />}
           </a>
           <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="flex h-full items-center justify-center rounded-lg bg-white/10 px-2.5 text-indigo-100 hover:bg-white/20 hover:text-white"
+            <PendingSubmit
+              busyText="Logging out…"
+              iconOnly
+              className="flex h-full items-center justify-center rounded-lg bg-white/10 px-2.5 text-indigo-100 hover:bg-white/20 hover:text-white disabled:cursor-wait"
               aria-label="Log out"
               title="Log out"
             >
               <LogOut className="h-4 w-4" />
-            </button>
+            </PendingSubmit>
           </form>
         </div>
       </div>

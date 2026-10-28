@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, errProps } from "./field";
 import { indianStates } from "@/lib/states";
 import type { FieldErrors } from "@/lib/validation";
@@ -87,7 +87,7 @@ export function BillingForm({
       {error && <FormError message={error} />}
       <div className="flex items-center gap-3">
         <button type="submit" className={buttonClass("primary")} disabled={status === "saving"}>
-          {status === "saving" ? "Saving…" : submitLabel}
+          <BusyLabel busy={status === "saving"} busyText="Saving…">{submitLabel}</BusyLabel>
         </button>
         {status === "saved" && !onSaved && (
           <span role="status" className="text-sm font-medium text-success">

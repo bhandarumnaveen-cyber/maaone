@@ -31,6 +31,7 @@ export const site = {
   url: "https://one.maalabs.in",
   company: "Maa Labs Private Limited",
   companyShort: "Maa Labs",
+  companyUrl: "https://maalabs.in",
   founder: "Naveen Goyal",
   founderTitle: "Founder & Director",
   developer: {

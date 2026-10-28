@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
 import { Turnstile } from "./turnstile";
@@ -53,7 +53,7 @@ export function ContactForm() {
       <Turnstile />
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={`${buttonClass("primary", "lg")} w-full sm:w-auto`} disabled={state.status === "submitting"}>
-        {state.status === "submitting" ? "Sending…" : "Send message"}
+        <BusyLabel busy={state.status === "submitting"} busyText="Sending…">Send message</BusyLabel>
       </button>
     </form>
   );

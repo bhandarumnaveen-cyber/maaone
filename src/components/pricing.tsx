@@ -97,6 +97,7 @@ function TrialCard({ settings }: { settings: Settings }) {
   const cta = primaryCta(settings, "growth");
   return (
     <CardShell
+      wide
       name="Free trial"
       summary={`Everything in Growth, free for ${settings.trialDays} days.`}
       price="₹0"

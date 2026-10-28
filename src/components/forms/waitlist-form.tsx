@@ -5,7 +5,7 @@ import { readAttribution } from "../attribution";
 import { Check, CheckCircle2, Copy } from "lucide-react";
 import { WhatsAppIcon } from "../icons";
 import { site } from "@/site.config";
-import { buttonClass } from "../ui";
+import { buttonClass, BusyLabel } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
 import { Turnstile } from "./turnstile";
@@ -130,7 +130,7 @@ export function WaitlistForm({
       <Turnstile />
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={`${buttonClass("primary", "lg")} w-full`} disabled={state.status === "submitting"}>
-        {state.status === "submitting" ? "Joining…" : "Join the waitlist"}
+        <BusyLabel busy={state.status === "submitting"} busyText="Joining…">Join the waitlist</BusyLabel>
       </button>
       <p className="text-center text-xs text-muted">
         No payment needed. We&rsquo;ll only contact you about Maa One. See our{" "}
