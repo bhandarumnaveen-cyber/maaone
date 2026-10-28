@@ -18,6 +18,7 @@
   --accent: #f59e0b;
   --accent-ink: #b45309;
   --accent-soft: #fef3c7;
+  --logo-accent: #f08c00;
   --success: #15803d;
   --success-soft: #dcfce7;
   color-scheme: light;
@@ -37,6 +38,7 @@
   --accent: #f59e0b;
   --accent-ink: #fbbf24;
   --accent-soft: #3a2a08;
+  --logo-accent: #fbbf24;
   --success: #4ade80;
   --success-soft: #052e16;
   color-scheme: dark;
@@ -56,6 +58,7 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-logo-accent: var(--logo-accent);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

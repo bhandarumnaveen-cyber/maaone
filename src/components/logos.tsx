@@ -1,35 +1,46 @@
 import Link from "next/link";
+import { LotusMark } from "./lotus-mark";
 import { site } from "@/site.config";
 
-/** Maa One mark: an indigo tile with a saffron dot — "one" place for everything. */
-export function MaaOneMark({ className = "h-8 w-8" }: { className?: string }) {
+/** App-icon style mark: saffron lotus on an indigo tile. */
+export function MaaOneMark({ className = "h-9 w-9" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect width="32" height="32" rx="9" fill="#3730A3" />
-      <path
-        d="M8 22V11.5c0-.6.7-.9 1.1-.5l5.5 5.6c.8.8 2 .8 2.8 0l5.5-5.6c.4-.4 1.1-.1 1.1.5V22"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="16" cy="24.2" r="2.2" fill="#F59E0B" />
-    </svg>
+    <span className={`inline-flex shrink-0 items-center justify-center rounded-[28%] bg-brand ${className}`} aria-hidden="true">
+      <LotusMark className="h-[78%] w-[78%]" strokeWidth={2.8} />
+    </span>
   );
 }
 
-export function MaaOneLogo({ href = "/" }: { href?: string }) {
+/** "Maa" in indigo, "One" in saffron — as in the app. */
+export function Wordmark({ className = "text-xl" }: { className?: string }) {
   return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-2 rounded-lg font-bold tracking-tight text-ink"
-      aria-label={`${site.name} home`}
-    >
-      <MaaOneMark />
-      <span className="text-lg whitespace-nowrap">
-        Maa <span className="text-brand-ink">One</span>
+    <span className={`font-extrabold tracking-tight whitespace-nowrap ${className}`}>
+      <span className="text-brand-ink">Maa</span>{" "}
+      <span className="bg-gradient-to-b from-amber-400 to-orange-600 bg-clip-text text-transparent dark:from-amber-300 dark:to-orange-400">
+        One
       </span>
+    </span>
+  );
+}
+
+export function MaaOneLogo({ href = "/", subtitle }: { href?: string; subtitle?: string }) {
+  const img = site.logoImage;
+  return (
+    <Link href={href} className="inline-flex items-center gap-2 rounded-lg" aria-label={`${site.name} home`}>
+      {img ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={img.src} width={img.width} height={img.height} alt="" className="h-10 w-auto" />
+      ) : (
+        <>
+          <LotusMark className="h-10 w-10" />
+          <span className="flex flex-col leading-none">
+            <Wordmark />
+            <span className="mt-1 text-[9.5px] font-semibold tracking-[0.18em] text-muted uppercase">
+              {subtitle ?? "Business Growth Platform"}
+            </span>
+          </span>
+        </>
+      )}
     </Link>
   );
 }

@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { themeScript } from "@/lib/theme";
 import { SettingsProvider } from "@/components/settings-provider";
 import { JsonLd } from "@/components/json-ld";
@@ -59,11 +57,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           }}
         />
         <SettingsProvider value={settings}>
-          <Header />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          {children}
         </SettingsProvider>
       </body>
     </html>

@@ -1,251 +1,240 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import clsx from "clsx";
-import { Download } from "lucide-react";
-import { adminTables, isAdminTable, requireAdmin, type AdminTableKey, type DashboardStats } from "@/lib/admin";
+import { BadgeIndianRupee, Download, IndianRupee, Lightbulb, LifeBuoy, MessageSquareText, TrendingUp, Users } from "lucide-react";
+import { requireAdmin, type DashboardStats } from "@/lib/admin";
 import { formatMoney } from "@/lib/format";
+import { getPlans } from "@/lib/settings";
 import { buttonClass } from "@/components/ui";
+import {
+  Avatar,
+  BarChart,
+  Donut,
+  EmptyState,
+  PageHeader,
+  Panel,
+  Pill,
+  RankBars,
+  StatCard,
+  timeAgo,
+} from "@/components/dashboard-ui";
 
-export const metadata: Metadata = {
-  title: "Admin",
-  robots: { index: false, follow: false },
-};
+export const metadata = { title: "Overview" };
 
-const ROW_LIMIT = 200;
+const IST = "Asia/Kolkata";
+const dayKey = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: IST });
+const monthKey = (d: Date) => d.toLocaleDateString("en-CA", { year: "numeric", month: "2-digit", timeZone: IST });
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+function greeting() {
+  const h = Number(new Date().toLocaleString("en-IN", { hour: "numeric", hour12: false, timeZone: IST }));
+  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+}
+
+export default async function AdminOverview() {
   const auth = await requireAdmin();
-  if (auth.status === "anonymous") redirect("/login?next=/admin");
-  if (auth.status === "forbidden") notFound();
-  const { supabase } = auth;
+  if (auth.status !== "ok") return null; // the layout already redirected
+  const { supabase, user } = auth;
 
-  const tabParam = (await searchParams).tab ?? "waitlist";
-  const tab: AdminTableKey = isAdminTable(tabParam) ? tabParam : "waitlist";
-  const def = adminTables[tab];
+  const since30 = new Date(Date.now() - 29 * 86_400_000);
+  const since12m = new Date();
+  since12m.setMonth(since12m.getMonth() - 11, 1);
 
-  const yearAgo = new Date();
-  yearAgo.setMonth(yearAgo.getMonth() - 11, 1);
-  yearAgo.setHours(0, 0, 0, 0);
-
-  const [statsRes, rowsRes, paymentsRes] = await Promise.all([
+  const [statsRes, profileRes, waitRes, recentRes, contactRes, ideasRes, paymentsRes, plans] = await Promise.all([
     supabase.rpc("admin_dashboard_stats"),
-    supabase
-      .from(def.table)
-      .select(def.columns.join(","), { count: "exact" })
-      .order(def.order, { ascending: def.ascending })
-      .limit(ROW_LIMIT),
-    supabase
-      .from("payments")
-      .select("amount, paid_at")
-      .eq("status", "captured")
-      .eq("currency", "INR")
-      .gte("paid_at", yearAgo.toISOString()),
+    supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+    supabase.from("waitlist").select("created_at, plan_interest, business_type").neq("status", "removed").limit(10000),
+    supabase.from("waitlist").select("id, name, business_name, city, plan_interest, created_at").order("created_at", { ascending: false }).limit(6),
+    supabase.from("contact_messages").select("id, name, message, status, created_at").order("created_at", { ascending: false }).limit(4),
+    supabase.from("feature_requests").select("id, name, request, status, created_at").order("created_at", { ascending: false }).limit(4),
+    supabase.from("payments").select("amount, paid_at").eq("status", "captured").eq("currency", "INR").gte("paid_at", since12m.toISOString()),
+    getPlans(),
   ]);
 
   const stats = statsRes.data as DashboardStats | null;
-  const rows = (rowsRes.data ?? []) as unknown as Record<string, unknown>[];
+  const waitlist = waitRes.data ?? [];
+  const firstName = (profileRes.data?.full_name || user.email?.split("@")[0] || "there").split(" ")[0];
 
-  // Subscriptions point at auth users; look up their emails from profiles.
-  let emails: Record<string, string> = {};
-  if ((tab === "subscribers" || tab === "support") && rows.length) {
-    const ids = [...new Set(rows.map((r) => r.user_id).filter(Boolean))] as string[];
-    const { data } = await supabase.from("profiles").select("id, email, phone").in("id", ids);
-    emails = Object.fromEntries((data ?? []).map((p) => [p.id, p.email ?? p.phone ?? ""]));
+  // Signups per day, last 30 days (IST)
+  const perDay = new Map<string, number>();
+  for (let i = 0; i < 30; i++) perDay.set(dayKey(new Date(since30.getTime() + i * 86_400_000)), 0);
+  for (const w of waitlist) {
+    const k = dayKey(new Date(w.created_at));
+    if (perDay.has(k)) perDay.set(k, perDay.get(k)! + 1);
   }
+  const signups = [...perDay].map(([key, value]) => ({
+    key,
+    value,
+    label: new Date(`${key}T12:00:00+05:30`).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: IST }),
+  }));
+  const signups30 = signups.reduce((a, d) => a + d.value, 0);
 
-  const revenueByMonth = monthlyRevenue(paymentsRes.data ?? [], yearAgo);
+  // Revenue per month, last 12 months
+  const perMonth = new Map<string, number>();
+  for (let i = 0; i < 12; i++) perMonth.set(monthKey(new Date(since12m.getFullYear(), since12m.getMonth() + i, 15)), 0);
+  for (const p of paymentsRes.data ?? []) {
+    if (!p.paid_at) continue;
+    const k = monthKey(new Date(p.paid_at));
+    if (perMonth.has(k)) perMonth.set(k, perMonth.get(k)! + p.amount);
+  }
+  const revenue = [...perMonth].map(([key, value]) => ({
+    key,
+    value,
+    label: new Date(`${key}-15T12:00:00+05:30`).toLocaleDateString("en-IN", { month: "short", timeZone: IST }),
+  }));
 
-  const cards = stats
-    ? [
-        { label: "On waitlist", value: stats.waitlist_total.toLocaleString("en-IN"), sub: `+${stats.waitlist_last_7_days} this week` },
-        { label: "Active subscribers", value: stats.subscriptions_active.toLocaleString("en-IN"), sub: `${stats.subscriptions_in_trial} in trial` },
-        { label: "MRR (before GST)", value: formatMoney(stats.mrr_inr_paise, "INR"), sub: "Yearly plans counted as 1/12" },
-        { label: "Revenue this month", value: formatMoney(stats.revenue_this_month_inr_paise, "INR"), sub: "Captured, incl. GST" },
-        { label: "New contact messages", value: String(stats.contact_messages_new) },
-        { label: "New feature requests", value: String(stats.feature_requests_new) },
-        { label: "Open support tickets", value: String(stats.support_tickets_open) },
-      ]
-    : [];
+  // Plan interest and business types
+  const planName = (code: string | null) => plans.find((p) => p.code === code)?.name ?? "Not sure yet";
+  const count = <T,>(items: T[], key: (t: T) => string) => {
+    const m = new Map<string, number>();
+    for (const i of items) m.set(key(i), (m.get(key(i)) ?? 0) + 1);
+    return [...m].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
+  };
+  const planMix = count(waitlist, (w) => planName(w.plan_interest));
+  const types = count(waitlist, (w) => w.business_type || "Other").slice(0, 6);
 
   return (
-    <section className="container-page py-10 sm:py-14">
-      <h1 className="text-3xl font-bold tracking-tight text-ink">Admin</h1>
+    <>
+      <PageHeader
+        title={
+          <>
+            {greeting()}, {firstName} <span aria-hidden="true">👋</span>
+          </>
+        }
+        description="Here's how Maa One is doing."
+        actions={
+          <a href="/admin/export/waitlist" download className={buttonClass("secondary")}>
+            <Download className="h-4 w-4" aria-hidden="true" /> Export waitlist
+          </a>
+        }
+      />
 
       {statsRes.error && (
-        <p role="alert" className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+        <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           Couldn&rsquo;t load dashboard numbers: {statsRes.error.message}
         </p>
       )}
 
-      <dl className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {cards.map((c) => (
-          <div key={c.label} className="card p-4">
-            <dt className="text-xs font-medium text-muted">{c.label}</dt>
-            <dd className="mt-1 text-2xl font-bold text-ink">{c.value}</dd>
-            {c.sub && <dd className="mt-0.5 text-xs text-muted">{c.sub}</dd>}
-          </div>
-        ))}
-      </dl>
-
-      <div className="card mt-6 p-5">
-        <h2 className="font-semibold text-ink">Monthly revenue (INR, captured, incl. GST)</h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[520px] text-sm">
-            <thead>
-              <tr className="text-left text-muted">
-                {revenueByMonth.map((m) => (
-                  <th key={m.key} scope="col" className="px-2 py-1 font-medium whitespace-nowrap">
-                    {m.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-ink">
-                {revenueByMonth.map((m) => (
-                  <td key={m.key} className="px-2 py-1 font-semibold whitespace-nowrap">
-                    {formatMoney(m.total, "INR")}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="On the waitlist"
+          value={(stats?.waitlist_total ?? 0).toLocaleString("en-IN")}
+          sub={<span className="font-medium text-success">+{stats?.waitlist_last_7_days ?? 0} this week</span>}
+          icon={Users}
+          tone="indigo"
+          href="/admin/waitlist"
+        />
+        <StatCard
+          label="Active subscribers"
+          value={(stats?.subscriptions_active ?? 0).toLocaleString("en-IN")}
+          sub={`${stats?.subscriptions_in_trial ?? 0} in free trial`}
+          icon={BadgeIndianRupee}
+          tone="green"
+          href="/admin/subscribers"
+        />
+        <StatCard
+          label="MRR (before GST)"
+          value={formatMoney(stats?.mrr_inr_paise ?? 0, "INR")}
+          sub="Yearly plans counted as 1/12"
+          icon={TrendingUp}
+          tone="amber"
+        />
+        <StatCard
+          label="Revenue this month"
+          value={formatMoney(stats?.revenue_this_month_inr_paise ?? 0, "INR")}
+          sub="Captured, incl. GST"
+          icon={IndianRupee}
+          tone="sky"
+        />
       </div>
 
-      <nav aria-label="Admin lists" className="mt-8 flex gap-2 overflow-x-auto border-b border-line">
-        {(Object.keys(adminTables) as AdminTableKey[]).map((k) => (
-          <Link
-            key={k}
-            href={`/admin?tab=${k}`}
-            aria-current={k === tab ? "page" : undefined}
-            className={clsx(
-              "-mb-px border-b-2 px-3 py-2.5 text-sm font-semibold whitespace-nowrap",
-              k === tab ? "border-brand-ink text-brand-ink" : "border-transparent text-muted hover:text-ink",
-            )}
-          >
-            {adminTables[k].title}
-          </Link>
-        ))}
-      </nav>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted">
-          {rowsRes.count ?? rows.length} total
-          {(rowsRes.count ?? 0) > ROW_LIMIT ? ` · showing the first ${ROW_LIMIT}` : ""}
-        </p>
-        <a href={`/admin/export/${tab}`} className={buttonClass("secondary")}>
-          <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
-        </a>
+      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+        <QuickLink href="/admin/contact" icon={MessageSquareText} label="New contact messages" value={stats?.contact_messages_new ?? 0} />
+        <QuickLink href="/admin/feature-requests" icon={Lightbulb} label="New feature requests" value={stats?.feature_requests_new ?? 0} />
+        <QuickLink href="/admin/support" icon={LifeBuoy} label="Open support tickets" value={stats?.support_tickets_open ?? 0} />
       </div>
 
-      {rowsRes.error ? (
-        <p role="alert" className="mt-4 text-sm text-red-600">
-          {rowsRes.error.message}
-        </p>
-      ) : (
-        <div className="relative mt-4 overflow-x-auto rounded-xl border border-line bg-surface">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-line">
-              <tr>
-                {(tab === "subscribers" || tab === "support") && (
-                  <th scope="col" className="px-3 py-2.5 font-semibold text-ink">customer</th>
-                )}
-                {def.columns.map((c) => (
-                  <th key={c} scope="col" className="px-3 py-2.5 font-semibold whitespace-nowrap text-ink">
-                    {c.replace(/_/g, " ")}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={def.columns.length + 1} className="px-3 py-8 text-center text-muted">
-                    Nothing here yet.
-                  </td>
-                </tr>
-              )}
-              {rows.map((r, i) => (
-                <tr key={i} className="align-top">
-                  {(tab === "subscribers" || tab === "support") && (
-                    <td className="px-3 py-2 whitespace-nowrap text-ink">{emails[r.user_id as string] ?? "—"}</td>
-                  )}
-                  {def.columns.map((c) => (
-                    <td key={c} className="max-w-xs px-3 py-2 text-muted">
-                      {tab === "support" && c === "admin_reply" ? (
-                        <TicketReply id={String(r.id)} reply={(r.admin_reply as string) ?? ""} status={String(r.status)} />
-                      ) : (
-                        formatCell(c, r[c], r.currency as string)
-                      )}
-                    </td>
-                  ))}
-                </tr>
+      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+        <Panel
+          className="xl:col-span-2"
+          title="Waitlist signups"
+          description={`${signups30} in the last 30 days`}
+          action={{ href: "/admin/waitlist", label: "View waitlist" }}
+        >
+          <BarChart data={signups} label="Waitlist signups per day, last 30 days" />
+        </Panel>
+        <Panel title="Plan interest" description="What waitlist businesses want">
+          <Donut data={planMix} centerLabel="businesses" label="Plan interest" />
+        </Panel>
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+        <Panel className="xl:col-span-2" title="Revenue" description="Captured payments per month, incl. GST">
+          <BarChart data={revenue} label="Revenue per month, last 12 months" format={(n) => formatMoney(n, "INR")} />
+        </Panel>
+        <Panel title="Business types" description="Top segments on the waitlist">
+          <RankBars data={types} />
+        </Panel>
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+        <Panel title="Latest signups" action={{ href: "/admin/waitlist", label: "All" }} bodyClassName="p-0">
+          {recentRes.data?.length ? (
+            <ul className="divide-y divide-line">
+              {recentRes.data.map((w) => (
+                <li key={w.id} className="flex items-center gap-3 px-5 py-3">
+                  <Avatar name={w.name} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-ink">{w.name}</p>
+                    <p className="truncate text-xs text-muted">
+                      {[w.business_name, w.city].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <Pill tone="indigo">{planName(w.plan_interest)}</Pill>
+                    <p className="mt-1 text-[11px] text-muted">{timeAgo(w.created_at)}</p>
+                  </div>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
+            </ul>
+          ) : (
+            <EmptyState icon={Users} title="No signups yet">Share the waitlist link to get your first businesses.</EmptyState>
+          )}
+        </Panel>
+        <Panel title="Contact messages" action={{ href: "/admin/contact", label: "All" }} bodyClassName="p-0">
+          <MiniFeed items={(contactRes.data ?? []).map((c) => ({ id: c.id, name: c.name, text: c.message, status: c.status, at: c.created_at }))} empty="No messages yet" />
+        </Panel>
+        <Panel title="Feature requests" action={{ href: "/admin/feature-requests", label: "All" }} bodyClassName="p-0">
+          <MiniFeed items={(ideasRes.data ?? []).map((f) => ({ id: f.id, name: f.name || "Anonymous", text: f.request, status: f.status, at: f.created_at }))} empty="No requests yet" />
+        </Panel>
+      </div>
+    </>
   );
 }
 
-function formatCell(column: string, v: unknown, currency?: string) {
-  if (v === null || v === undefined || v === "") return "—";
-  if (column === "amount") return formatMoney(Number(v), currency === "USD" ? "USD" : "INR");
-  if (typeof v === "boolean") return v ? "Yes" : "No";
-  if (/_at$|_end$/.test(column)) {
-    return new Date(String(v)).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
-  }
-  const s = String(v);
-  return <span className="line-clamp-3 break-words">{s}</span>;
-}
-
-/** Sums captured INR payments into the last 12 calendar months (IST). */
-function monthlyRevenue(payments: { amount: number; paid_at: string | null }[], from: Date) {
-  const key = (d: Date) =>
-    d.toLocaleDateString("en-CA", { year: "numeric", month: "2-digit", timeZone: "Asia/Kolkata" });
-  const months: { key: string; label: string; total: number }[] = [];
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(from.getFullYear(), from.getMonth() + i, 15);
-    months.push({
-      key: key(d),
-      label: d.toLocaleDateString("en-IN", { month: "short", year: "2-digit" }),
-      total: 0,
-    });
-  }
-  const byKey = Object.fromEntries(months.map((m) => [m.key, m]));
-  for (const p of payments) {
-    if (!p.paid_at) continue;
-    const m = byKey[key(new Date(p.paid_at))];
-    if (m) m.total += p.amount;
-  }
-  return months;
-}
-
-/** Plain form POST, so replying works without client-side JavaScript. */
-function TicketReply({ id, reply, status }: { id: string; reply: string; status: string }) {
+function QuickLink({ href, icon: Icon, label, value }: { href: string; icon: typeof Users; label: string; value: number }) {
   return (
-    <form action="/api/admin/tickets" method="post" className="min-w-[240px] space-y-2">
-      <input type="hidden" name="id" value={id} />
-      <label className="sr-only" htmlFor={`reply-${id}`}>
-        Reply
-      </label>
-      <textarea id={`reply-${id}`} name="admin_reply" rows={3} defaultValue={reply} className="input text-sm" />
-      <div className="flex gap-2">
-        <label className="sr-only" htmlFor={`status-${id}`}>
-          Status
-        </label>
-        <select id={`status-${id}`} name="status" defaultValue={status === "open" ? "answered" : status} className="input py-1.5 text-sm">
-          <option value="open">Open</option>
-          <option value="answered">Answered</option>
-          <option value="closed">Closed</option>
-        </select>
-        <button type="submit" className={buttonClass("primary")}>
-          Save
-        </button>
-      </div>
-    </form>
+    <Link href={href} className="card flex items-center gap-3 px-4 py-3.5 shadow-sm transition-colors hover:border-brand-ink/40">
+      <Icon className="h-5 w-5 text-brand-ink" aria-hidden="true" />
+      <span className="flex-1 text-sm font-medium text-ink">{label}</span>
+      <span className={value ? "rounded-full bg-rose-500 px-2 text-xs leading-5 font-bold text-white" : "text-sm font-semibold text-muted"}>
+        {value}
+      </span>
+    </Link>
+  );
+}
+
+function MiniFeed({ items, empty }: { items: { id: string; name: string; text: string; status: string; at: string }[]; empty: string }) {
+  if (!items.length) return <p className="px-5 py-10 text-center text-sm text-muted">{empty}</p>;
+  return (
+    <ul className="divide-y divide-line">
+      {items.map((i) => (
+        <li key={i.id} className="px-5 py-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-sm font-semibold text-ink">{i.name}</p>
+            <span className="shrink-0 text-[11px] text-muted">{timeAgo(i.at)}</span>
+          </div>
+          <p className="mt-0.5 line-clamp-2 text-sm text-muted">{i.text}</p>
+          {i.status === "new" && <Pill tone="rose" className="mt-1.5">New</Pill>}
+        </li>
+      ))}
+    </ul>
   );
 }
