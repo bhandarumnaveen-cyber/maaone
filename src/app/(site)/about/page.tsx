@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Mail } from "lucide-react";
+import { ArrowUpRight, Globe, Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { MaaLabsLogo, NaveenCodesLogo } from "@/components/logos";
 import { FinalCta } from "@/components/final-cta";
@@ -94,13 +94,21 @@ export default async function AboutPage() {
             <article className="relative overflow-hidden rounded-2xl border border-amber-200/70 bg-[linear-gradient(160deg,#fffbeb_0%,#ffffff_55%)] p-6 shadow-sm sm:p-8 dark:border-amber-400/20 dark:bg-[linear-gradient(160deg,#2a1f08_0%,#14141f_60%)]">
               <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-red-600" aria-hidden="true" />
               <p className="text-xs font-semibold tracking-[0.14em] text-amber-700 uppercase dark:text-amber-300">The company</p>
-              <MaaLabsLogo className="mt-4 text-2xl" />
+              <a href={site.companyUrl} target="_blank" rel="noopener noreferrer" aria-label="Maa Labs — maalabs.in" className="mt-4 inline-flex rounded-lg transition-opacity hover:opacity-85">
+                <MaaLabsLogo className="text-2xl" />
+              </a>
               <p className="mt-2 text-sm font-medium text-muted">{site.company}</p>
               <p className="mt-4 leading-relaxed text-ink">
                 The company that owns and runs Maa One. Maa Labs bills customers, issues GST
                 invoices, provides support and is responsible for your data.
               </p>
               <ul className="mt-6 space-y-2 text-sm">
+                <li>
+                  <a href={site.companyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-semibold text-amber-800 hover:underline dark:text-amber-300">
+                    <Globe className="h-4 w-4" aria-hidden="true" />
+                    maalabs.in
+                  </a>
+                </li>
                 <li>
                   <a href={`mailto:${cfg.supportEmail}`} className="inline-flex items-center gap-2 font-semibold text-amber-800 hover:underline dark:text-amber-300">
                     <Mail className="h-4 w-4" aria-hidden="true" />
