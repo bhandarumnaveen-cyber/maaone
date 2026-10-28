@@ -91,16 +91,18 @@ export default async function AboutPage() {
             The two brands behind Maa One
           </h2>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <article className="rounded-xl border border-line bg-bg p-6 sm:p-8">
-              <MaaLabsLogo className="text-2xl" />
-              <p className="mt-1 text-sm font-medium text-muted">{site.company}</p>
+            <article className="relative overflow-hidden rounded-2xl border border-amber-200/70 bg-[linear-gradient(160deg,#fffbeb_0%,#ffffff_55%)] p-6 shadow-sm sm:p-8 dark:border-amber-400/20 dark:bg-[linear-gradient(160deg,#2a1f08_0%,#14141f_60%)]">
+              <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-red-600" aria-hidden="true" />
+              <p className="text-xs font-semibold tracking-[0.14em] text-amber-700 uppercase dark:text-amber-300">The company</p>
+              <MaaLabsLogo className="mt-4 text-2xl" />
+              <p className="mt-2 text-sm font-medium text-muted">{site.company}</p>
               <p className="mt-4 leading-relaxed text-ink">
                 The company that owns and runs Maa One. Maa Labs bills customers, issues GST
                 invoices, provides support and is responsible for your data.
               </p>
               <ul className="mt-6 space-y-2 text-sm">
                 <li>
-                  <a href={`mailto:${cfg.supportEmail}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
+                  <a href={`mailto:${cfg.supportEmail}`} className="inline-flex items-center gap-2 font-semibold text-amber-800 hover:underline dark:text-amber-300">
                     <Mail className="h-4 w-4" aria-hidden="true" />
                     {cfg.supportEmail}
                   </a>
@@ -110,7 +112,7 @@ export default async function AboutPage() {
                     href={cfg.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline"
+                    className="inline-flex items-center gap-2 font-semibold text-amber-800 hover:underline dark:text-amber-300"
                   >
                     <WhatsAppIcon className="h-4 w-4" />
                     WhatsApp {cfg.whatsappDisplay}
@@ -118,9 +120,11 @@ export default async function AboutPage() {
                 </li>
               </ul>
             </article>
-            <article className="rounded-xl border border-line bg-bg p-6 sm:p-8">
-              <NaveenCodesLogo className="text-2xl" />
-              <p className="mt-1 text-sm font-medium text-muted">Developer brand of {site.founder}</p>
+            <article className="relative overflow-hidden rounded-2xl border border-orange-200/70 bg-[linear-gradient(160deg,#fff7ed_0%,#ffffff_55%)] p-6 shadow-sm sm:p-8 dark:border-orange-400/20 dark:bg-[linear-gradient(160deg,#2a1608_0%,#14141f_60%)]">
+              <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-orange-400 to-indigo-500" aria-hidden="true" />
+              <p className="text-xs font-semibold tracking-[0.14em] text-orange-700 uppercase dark:text-orange-300">The builders</p>
+              <NaveenCodesLogo className="mt-4 text-2xl" />
+              <p className="mt-2 text-sm font-medium text-muted">Developer brand of {site.founder}</p>
               <p className="mt-4 leading-relaxed text-ink">
                 {site.founder}&rsquo;s developer brand, which designs and builds Maa One — the app,
                 the AI and this website.
@@ -131,14 +135,14 @@ export default async function AboutPage() {
                     href={site.developer.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline"
+                    className="inline-flex items-center gap-2 font-semibold text-orange-700 hover:underline dark:text-orange-300"
                   >
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                     naveencodes.com
                   </a>
                 </li>
                 <li>
-                  <a href={`mailto:${cfg.naveencodesEmail}`} className="inline-flex items-center gap-2 font-medium text-brand-ink hover:underline">
+                  <a href={`mailto:${cfg.naveencodesEmail}`} className="inline-flex items-center gap-2 font-semibold text-orange-700 hover:underline dark:text-orange-300">
                     <Mail className="h-4 w-4" aria-hidden="true" />
                     {cfg.naveencodesEmail}
                   </a>
@@ -150,24 +154,44 @@ export default async function AboutPage() {
       </section>
 
       <section className="section" aria-labelledby="company-title">
-        <div className="container-page max-w-3xl">
-          <h2 id="company-title" className="h2">
-            Company details
-          </h2>
-          <dl className="mt-6 divide-y divide-line rounded-xl border border-line bg-surface">
-            {[
-              ["Company", site.company],
-              ["Product", site.name],
-              [site.founderTitle, site.founder],
-              ["Support", cfg.supportEmail],
-              ["WhatsApp", cfg.whatsappDisplay],
-            ].map(([k, v]) => (
-              <div key={k} className="grid gap-1 px-5 py-4 sm:grid-cols-3">
-                <dt className="text-sm font-medium text-muted">{k}</dt>
-                <dd className="font-medium text-ink sm:col-span-2">{v}</dd>
-              </div>
-            ))}
-          </dl>
+        <div className="container-page grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
+          <div>
+            <h2 id="company-title" className="h2">
+              Company details
+            </h2>
+            <dl className="mt-6 divide-y divide-line rounded-2xl border border-line bg-surface shadow-sm">
+              {[
+                ["Company", site.company],
+                ["Product", site.name],
+                [site.founderTitle, site.founder],
+                ["Built by", "NaveenCodes"],
+                ["Support", cfg.supportEmail],
+                ["WhatsApp", cfg.whatsappDisplay],
+              ].map(([k, v]) => (
+                <div key={k} className="grid gap-1 px-5 py-4 sm:grid-cols-3">
+                  <dt className="text-sm font-medium text-muted">{k}</dt>
+                  <dd className="font-medium text-ink sm:col-span-2">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <figure>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/maaone-maalabs-naveencodes-960.webp"
+              srcSet="/brand/maaone-maalabs-naveencodes-640.webp 640w, /brand/maaone-maalabs-naveencodes-960.webp 960w, /brand/maaone-maalabs-naveencodes-1440.webp 1440w"
+              sizes="(min-width: 1024px) 560px, calc(100vw - 32px)"
+              width={1440}
+              height={480}
+              loading="lazy"
+              decoding="async"
+              alt="Maa One — Business Growth Platform, by Maa Labs and NaveenCodes"
+              className="w-full rounded-2xl shadow-2xl shadow-indigo-900/25 ring-1 ring-black/5"
+            />
+            <figcaption className="mt-3 text-center text-sm text-muted">
+              Maa One by Maa Labs · designed and built by NaveenCodes
+            </figcaption>
+          </figure>
         </div>
       </section>
 

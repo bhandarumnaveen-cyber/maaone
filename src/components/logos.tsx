@@ -28,20 +28,40 @@ export function MaaOneLogo({ href = "/", className = "h-12 sm:h-[52px]" }: { hre
   );
 }
 
-/** Text logo until the real Maa Labs logo file is uploaded. */
-export function MaaLabsLogo({ className = "" }: { className?: string }) {
+/** Maa Labs: the gold ML monogram with "MAA LABS". Size with a text-* class. */
+export function MaaLabsLogo({ className = "", withMark = true }: { className?: string; withMark?: boolean }) {
   return (
-    <span className={`inline-flex items-baseline font-bold tracking-tight text-ink ${className}`}>
-      Maa<span className="text-accent-ink">Labs</span>
+    <span className={`inline-flex items-center gap-[0.35em] leading-none ${className}`}>
+      {withMark && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/brand/maa-labs-mark-96.webp"
+          srcSet="/brand/maa-labs-mark-96.webp 96w, /brand/maa-labs-mark-192.webp 192w, /brand/maa-labs-mark-288.webp 288w"
+          sizes="48px"
+          width={96}
+          height={88}
+          alt=""
+          className="h-[1.5em] w-auto"
+        />
+      )}
+      <span className="font-extrabold tracking-[0.06em] text-ink uppercase">
+        Maa <span className="bg-gradient-to-b from-amber-400 to-amber-600 bg-clip-text text-transparent dark:from-amber-300 dark:to-amber-500">Labs</span>
+      </span>
     </span>
   );
 }
 
-/** Text logo until the real NaveenCodes logo file is uploaded. */
+/** NaveenCodes: orange </> with NAVEEN + orange CODES, as in the brand banner. Size with a text-* class. */
 export function NaveenCodesLogo({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-baseline font-mono font-bold tracking-tight text-ink ${className}`}>
-      <span className="text-brand-ink">&lt;</span>NaveenCodes<span className="text-brand-ink">/&gt;</span>
+    <span className={`inline-flex items-center gap-[0.3em] leading-none font-extrabold tracking-[0.04em] uppercase ${className}`}>
+      <span className="text-orange-600 dark:text-orange-400" aria-hidden="true">
+        &lt;/&gt;
+      </span>
+      <span>
+        <span className="text-ink">Naveen</span>
+        <span className="text-orange-600 dark:text-orange-400">Codes</span>
+      </span>
     </span>
   );
 }
