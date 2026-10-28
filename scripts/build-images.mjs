@@ -36,8 +36,9 @@ await variants(cutout("laptop-crm.png", 236), "laptop-crm", [480, 640, 960, 1440
 
 // The source logo has a grey smoke glow that looks dirty on light backgrounds:
 // fade out semi-transparent, low-saturation pixels and keep the gold and red.
-async function cleanLogo(file) {
-  const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+async function cleanLogo(file, crop) {
+  const src = crop ? sharp(file).extract(crop) : sharp(file);
+  const { data, info } = await src.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   for (let i = 0; i < data.length; i += 4) {
     const a = data[i + 3];
     if (!a || a >= 245) continue;
@@ -53,6 +54,13 @@ async function cleanLogo(file) {
 const logo = await cleanLogo(path.join(SRC, "maa-one-logo.png"));
 await variants(logo, "maa-one-logo", [280, 560, 840], "public/brand");
 await sharp(logo).resize({ width: 560 }).png({ compressionLevel: 9 }).toFile("public/brand/maa-one-logo.png");
+
+// The ML monogram on its own, for Maa Labs credits.
+const ml = await cleanLogo(path.join(SRC, "maa-one-logo.png"), { left: 0, top: 0, width: 752, height: 724 });
+await variants(ml, "maa-labs-mark", [96, 192, 288], "public/brand");
+
+// "Maa One by Maa Labs | NaveenCodes" banner for the About page.
+await variants(path.join(SRC, "banner-maaone-maalabs-naveencodes.webp"), "maaone-maalabs-naveencodes", [640, 960, 1440], "public/brand");
 
 for (const name of ["opengraph-image", "twitter-image"]) {
   await sharp(path.join(SRC, "banner-poora-business.png"))

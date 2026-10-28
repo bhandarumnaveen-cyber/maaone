@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Globe, Mail } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "./icons";
 import { MaaLabsLogo, MaaOneLogo, NaveenCodesLogo } from "./logos";
 import { ButtonLink } from "./ui";
@@ -88,14 +88,14 @@ export async function Footer() {
 
       {/* Brand strip */}
       <div className="border-t border-line">
-        <div className="container-page grid gap-6 py-8 md:grid-cols-2 md:items-start">
-          <div>
-            <p className="text-sm text-muted">Maa One is a product of</p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-2">
-              <MaaLabsLogo className="text-lg" />
-              <span className="text-sm font-medium text-ink">{site.company}</span>
-            </p>
-            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        <div className="container-page grid gap-4 py-8 md:grid-cols-2">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+            <p className="text-xs font-semibold tracking-[0.14em] text-muted uppercase">Maa One is a product of</p>
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <MaaLabsLogo className="text-xl" />
+              <span className="text-sm text-muted">{site.company}</span>
+            </div>
+            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
               <li>
                 <a href={`mailto:${s.supportEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
                   <Mail className="h-4 w-4" aria-hidden="true" />
@@ -115,23 +115,31 @@ export async function Footer() {
               </li>
             </ul>
           </div>
-          <div className="md:text-right">
-            <p className="text-sm text-muted">Built by</p>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+            <p className="text-xs font-semibold tracking-[0.14em] text-muted uppercase">Designed &amp; built by</p>
             <a
               href={site.developer.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 inline-block text-lg hover:opacity-80"
+              className="mt-3 inline-flex rounded-lg py-1 text-xl transition-opacity hover:opacity-85"
               aria-label="NaveenCodes — naveencodes.com"
             >
               <NaveenCodesLogo />
             </a>
-            <p className="mt-3 text-sm">
-              <a href={`mailto:${s.naveencodesEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
-                <Mail className="h-4 w-4" aria-hidden="true" />
-                {s.naveencodesEmail}
-              </a>
-            </p>
+            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <li>
+                <a href={site.developer.url} target="_blank" rel="noopener noreferrer" className={`${linkClass} inline-flex items-center gap-1.5`}>
+                  <Globe className="h-4 w-4" aria-hidden="true" />
+                  naveencodes.com
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${s.naveencodesEmail}`} className={`${linkClass} inline-flex items-center gap-1.5`}>
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                  {s.naveencodesEmail}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
