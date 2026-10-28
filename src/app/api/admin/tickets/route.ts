@@ -1,3 +1,4 @@
+import { redirectTo } from "@/lib/redirect";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 
@@ -22,5 +23,5 @@ export async function POST(req: Request) {
     console.error("[admin tickets]", error);
     return new NextResponse("Couldn't save reply", { status: 500 });
   }
-  return NextResponse.redirect(new URL("/admin/support", req.url), { status: 303 });
+  return redirectTo("/admin/support", 303);
 }

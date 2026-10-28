@@ -1,3 +1,4 @@
+import { redirectTo } from "@/lib/redirect";
 import { NextResponse } from "next/server";
 import { adminTables, isAdminTable, requireAdmin } from "@/lib/admin";
 
@@ -23,5 +24,5 @@ export async function POST(req: Request) {
     return new NextResponse("Couldn't update", { status: 500 });
   }
   const target = back.startsWith("/admin") && !back.startsWith("//") ? back : `/admin/${list}`;
-  return NextResponse.redirect(new URL(target, req.url), { status: 303 });
+  return redirectTo(target, 303);
 }
