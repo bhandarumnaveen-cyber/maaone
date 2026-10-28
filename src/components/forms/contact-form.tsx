@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { buttonClass } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
+import { Turnstile } from "./turnstile";
 
 const topics = ["General question", "Sales and pricing", "Partnership", "Support", "Other"];
 
@@ -49,6 +50,7 @@ export function ContactForm() {
       <Field id="c-message" label="Message" error={errors.message}>
         <textarea id="c-message" name="message" rows={5} className="input" required {...errProps("c-message", errors.message)} />
       </Field>
+      <Turnstile />
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={`${buttonClass("primary", "lg")} w-full sm:w-auto`} disabled={state.status === "submitting"}>
         {state.status === "submitting" ? "Sending…" : "Send message"}

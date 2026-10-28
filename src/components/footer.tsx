@@ -6,6 +6,7 @@ import { ButtonLink } from "./ui";
 import { site } from "@/site.config";
 import { getSettings } from "@/lib/settings";
 import { primaryCta } from "@/lib/cta";
+import { industries } from "@/data/industries";
 
 const columns = [
   {
@@ -16,6 +17,13 @@ const columns = [
       { href: "/roadmap", label: "Roadmap" },
       { href: "/changelog", label: "Changelog" },
       { href: "/blog", label: "Blog" },
+    ],
+  },
+  {
+    title: "Solutions",
+    links: [
+      ...industries.map((i) => ({ href: `/for/${i.slug}`, label: i.short })),
+      { href: "/for", label: "All businesses" },
     ],
   },
   {
@@ -37,7 +45,7 @@ export async function Footer() {
   const cta = primaryCta(s);
   return (
     <footer className="dark border-t border-white/10 bg-[linear-gradient(180deg,#14123a_0%,#0e0d26_100%)] text-ink">
-      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.35fr_1fr_1.15fr_1.1fr_0.9fr]">
         <div>
           <MaaOneLogo />
           <p className="mt-3 text-sm text-muted">
@@ -84,6 +92,7 @@ export async function Footer() {
         </div>
 
         <FooterColumn title={columns[1].title} links={columns[1].links} />
+        <FooterColumn title={columns[2].title} links={columns[2].links} />
       </div>
 
       {/* Brand strip */}

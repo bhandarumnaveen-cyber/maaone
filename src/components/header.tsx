@@ -15,6 +15,7 @@ import { useSessionUser } from "./use-session-user";
 
 const nav = [
   { href: "/features", label: "Features" },
+  { href: "/for", label: "Solutions" },
   { href: "/roadmap", label: "Roadmap" },
   { href: "/pricing", label: "Pricing" },
   { href: "/about", label: "About" },
@@ -35,6 +36,7 @@ export function Header() {
   ];
 
   useEffect(() => setOpen(false), [pathname]);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
@@ -54,9 +56,9 @@ export function Header() {
                   href={item.href}
                   className={clsx(
                     "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:text-brand-ink",
-                    pathname === item.href ? "text-brand-ink" : "text-muted",
+                    isActive(item.href) ? "text-brand-ink" : "text-muted",
                   )}
-                  aria-current={pathname === item.href ? "page" : undefined}
+                  aria-current={isActive(item.href) ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
@@ -65,6 +67,13 @@ export function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-1">
+          <Link
+            href={pathname === "/hi" ? "/" : "/hi"}
+            lang={pathname === "/hi" ? "en" : "hi"}
+            className="rounded-lg px-2.5 py-2 text-sm font-semibold text-muted hover:text-brand-ink"
+          >
+            {pathname === "/hi" ? "English" : "हिंदी"}
+          </Link>
           <ThemeToggle />
           {user ? (
             <UserMenu name={user.name} detail={user.detail} links={menuLinks} compact />
@@ -99,7 +108,7 @@ export function Header() {
                   href={item.href}
                   className={clsx(
                     "block rounded-lg px-2 py-3 text-base font-medium",
-                    pathname === item.href ? "text-brand-ink" : "text-ink",
+                    isActive(item.href) ? "text-brand-ink" : "text-ink",
                   )}
                 >
                   {item.label}

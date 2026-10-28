@@ -40,6 +40,18 @@ export function validateWaitlist(input: Record<string, unknown>) {
   return { data, errors, ok: Object.keys(errors).length === 0 };
 }
 
+/**
+ * Where a waitlist signup came from, stored in waitlist.source:
+ * "ref:<position>" for a referral link, "utm:<source>" for a campaign, else "website".
+ */
+export function waitlistSource(input: Record<string, unknown>) {
+  const ref = str(input.ref, 10);
+  if (/^[1-9][0-9]{0,6}$/.test(ref)) return `ref:${ref}`;
+  const utm = str(input.utm, 50).toLowerCase().replace(/[^a-z0-9_.-]/g, "");
+  if (utm) return `utm:${utm}`;
+  return "website";
+}
+
 export function validateContact(input: Record<string, unknown>) {
   const data = {
     name: str(input.name, 100),
