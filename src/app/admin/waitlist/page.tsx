@@ -8,6 +8,13 @@ import { StatusSelect } from "@/components/admin/status-select";
 
 export const metadata = { title: "Waitlist" };
 
+function sourceLabel(source: string | null) {
+  if (!source || source === "website") return "Website";
+  if (source.startsWith("ref:")) return `Referred by #${source.slice(4)}`;
+  if (source.startsWith("utm:")) return `Campaign: ${source.slice(4)}`;
+  return source;
+}
+
 type Row = {
   id: string;
   position: number;
@@ -27,7 +34,17 @@ export default async function WaitlistAdmin({ searchParams }: { searchParams: Pr
   const auth = await requireAdmin();
   if (auth.status !== "ok") return null;
   const params = await searchParams;
-  const [list, plans] = await Promise.all([loadAdminList(auth.supabase, "waitlist", params), getPlans()]);
+  const [list, plans, refRows] = await Promise.all([
+    loadAdminList(auth.supabase, "waitlist", params),
+    getPlans(),
+    auth.supabase.from("waitlist").select("source").like("source", "ref:%").limit(10000),
+  ]);
+  // Referral counts per position, from signups whose source is "ref:<position>".
+  const referrals = new Map<number, number>();
+  for (const r of refRows.data ?? []) {
+    const n = Number(String(r.source).slice(4));
+    if (n) referrals.set(n, (referrals.get(n) ?? 0) + 1);
+  }
   const rows = list.rows as unknown as Row[];
   const def = adminTables.waitlist;
   const back = `/admin/waitlist${params.q || params.status ? `?${new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])}` : ""}`;
@@ -86,7 +103,8 @@ export default async function WaitlistAdmin({ searchParams }: { searchParams: Pr
                   <th scope="col" className="px-4 py-3">Business</th>
                   <th scope="col" className="px-4 py-3">Type · City</th>
                   <th scope="col" className="px-4 py-3">Contact</th>
-                  <th scope="col" className="px-4 py-3">Plan</th>
+                  <th scope="col" className="px-4 py-3">Plan · Source</th>
+                  <th scope="col" className="px-4 py-3 text-center">Referrals</th>
                   <th scope="col" className="px-4 py-3">Joined</th>
                   <th scope="col" className="px-4 py-3">Status</th>
                 </tr>
@@ -114,6 +132,14 @@ export default async function WaitlistAdmin({ searchParams }: { searchParams: Pr
                     </td>
                     <td className="px-4 py-3">
                       <Pill tone={r.plan_interest ? "indigo" : "slate"}>{planName(r.plan_interest)}</Pill>
+                      <p className="mt-1 text-xs text-muted">{sourceLabel(r.source)}</p>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {referrals.get(r.position) ? (
+                        <Pill tone="green">{referrals.get(r.position)}</Pill>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-muted">{istDateTime(r.created_at)}</td>
                     <td className="px-4 py-3">
@@ -141,6 +167,10 @@ export default async function WaitlistAdmin({ searchParams }: { searchParams: Pr
                     </div>
                     <p className="mt-1 text-xs text-muted">
                       {[r.business_type, r.city].filter(Boolean).join(" · ")} · {istDateTime(r.created_at)}
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {sourceLabel(r.source)}
+                      {referrals.get(r.position) ? ` · ${referrals.get(r.position)} referred` : ""}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       {contact(r)}

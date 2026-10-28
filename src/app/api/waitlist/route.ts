@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { badRequest, invalid, isBot, readJson, serverError } from "@/lib/api";
-import { validateWaitlist } from "@/lib/validation";
+import { badRequest, invalid, isBot, readJson, verifyHuman, serverError } from "@/lib/api";
+import { validateWaitlist, waitlistSource } from "@/lib/validation";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { getPlans } from "@/lib/settings";
@@ -15,6 +15,8 @@ export async function POST(req: Request) {
 
   const { ok, errors, data } = validateWaitlist(body);
   if (!ok) return invalid(errors);
+  const notHuman = await verifyHuman(body, req);
+  if (notHuman) return notHuman;
   if (!supabaseConfigured) return NextResponse.json({ ok: true, preview: true });
 
   // plan_interest references plans(code); anything else is stored as "not sure".
@@ -29,7 +31,7 @@ export async function POST(req: Request) {
     p_business_type: data.businessType,
     p_city: data.city,
     p_plan_interest: planInterest,
-    p_source: "website",
+    p_source: waitlistSource(body),
   });
   if (error) return serverError("join_waitlist", error);
 

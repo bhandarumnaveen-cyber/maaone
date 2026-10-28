@@ -15,6 +15,7 @@ import {
   Lightbulb,
   LogOut,
   Menu,
+  Settings,
   MessageSquareText,
   UserRound,
   Users,
@@ -35,6 +36,7 @@ const icons = {
   billing: CreditCard,
   inbox: Inbox,
   profile: UserRound,
+  settings: Settings,
 };
 
 export type ShellNavItem = { href: string; label: string; icon: keyof typeof icons; badge?: number };

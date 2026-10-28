@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { badRequest, invalid, isBot, readJson, serverError } from "@/lib/api";
+import { badRequest, invalid, isBot, readJson, verifyHuman, serverError } from "@/lib/api";
 import { validateFeatureRequest } from "@/lib/validation";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
@@ -11,6 +11,8 @@ export async function POST(req: Request) {
 
   const { ok, errors, data } = validateFeatureRequest(body);
   if (!ok) return invalid(errors);
+  const notHuman = await verifyHuman(body, req);
+  if (notHuman) return notHuman;
   if (!supabaseConfigured) return NextResponse.json({ ok: true, preview: true });
 
   const { error } = await createAnonClient()

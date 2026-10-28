@@ -29,6 +29,13 @@ npm run lint && npm run build
 - Environment variables: see `.env.example`. `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`,
   `RAZORPAY_WEBHOOK_SECRET`, `RESEND_API_KEY` and `CRON_SECRET` are server-only.
 
+## Admin console
+`/admin` (admins only): overview, waitlist (with referral counts and source), feature requests, contact
+messages, subscribers, support tickets, **settings** (sales open, launch date, trial, GST, contacts, app
+address and every plan: prices, features, Razorpay plan IDs) and your profile.
+
+See `docs/website-backlog.md` for optional switches (analytics, spam protection) and planned work.
+
 ## Going live checklist
 1. **Supabase Auth**: add `{{ .Token }}` to the Magic Link and Confirm signup email templates (6-digit codes).
    For phone login, connect an SMS provider under Auth → Providers → Phone. Add `https://one.maalabs.in` to

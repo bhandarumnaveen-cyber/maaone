@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { buttonClass } from "../ui";
 import { Field, FormError, Honeypot, errProps } from "./field";
 import { useSubmit } from "./use-submit";
+import { Turnstile } from "./turnstile";
 
 export function FeatureRequestForm() {
   const { state, errors, onSubmit } = useSubmit("/api/feature-request");
@@ -45,6 +46,7 @@ export function FeatureRequestForm() {
           <input id="fr-email" name="email" type="email" className="input" autoComplete="email" {...errProps("fr-email", errors.email)} />
         </Field>
       </div>
+      <Turnstile />
       {state.status === "error" && <FormError message={state.message} />}
       <button type="submit" className={buttonClass("primary")} disabled={state.status === "submitting"}>
         {state.status === "submitting" ? "Sending…" : "Request this feature"}

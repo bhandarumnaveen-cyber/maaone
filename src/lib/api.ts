@@ -30,3 +30,30 @@ export function serverError(context: string, error: unknown) {
     { status: 500 },
   );
 }
+
+/**
+ * Cloudflare Turnstile check. Passes when TURNSTILE_SECRET_KEY isn't set (protection off).
+ * Returns a 400 response to send back when the check fails.
+ */
+export async function verifyHuman(body: Record<string, unknown>, req: Request) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return null;
+  const token = typeof body["cf-turnstile-response"] === "string" ? (body["cf-turnstile-response"] as string) : "";
+  const fail = NextResponse.json({ ok: false, error: "Please complete the security check and try again." }, { status: 400 });
+  if (!token) return fail;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: new URLSearchParams({
+        secret,
+        response: token,
+        remoteip: req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "",
+      }),
+    });
+    const json = (await res.json()) as { success?: boolean };
+    return json.success ? null : fail;
+  } catch (e) {
+    console.error("[turnstile]", e);
+    return fail;
+  }
+}

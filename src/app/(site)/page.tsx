@@ -21,6 +21,7 @@ import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchStrip } from "@/components/launch-strip";
 import { AppImage, type AppImageName } from "@/components/app-image";
+import { LazyAiDemo, LazyLossCalculator } from "@/components/lazy-widgets";
 import { FeatureBlocks } from "@/components/feature-blocks";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
 import { PricingPreview } from "@/components/pricing-preview";
@@ -76,6 +77,10 @@ const reasons = [
   { icon: ShieldCheck, title: "Made in India", body: "Designed for Indian service businesses, with support on WhatsApp." },
   { icon: Building2, title: "One price per business", body: "Pay per business, not per user. Add your team without surprise bills." },
 ];
+
+export const metadata = {
+  alternates: { canonical: "/", languages: { "en-IN": "/", "hi-IN": "/hi" } },
+};
 
 /** Refresh the waitlist count every 5 minutes. */
 export const revalidate = 300;
@@ -213,6 +218,19 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Cost of slow replies */}
+      <section className="section pt-0" aria-labelledby="calc-title">
+        <div className="container-page">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <p className="eyebrow">Do the maths</p>
+            <h2 id="calc-title" className="h2 mt-2">
+              How much are slow replies costing you?
+            </h2>
+          </div>
+          <LazyLossCalculator planPrice={(plans.find((p) => p.code === "growth") ?? plans[0]).inrMonthly} />
+        </div>
+      </section>
+
       {/* 4. How it works */}
       <section id="how-it-works" className="section border-y border-line bg-surface">
         <div className="container-page">
@@ -264,6 +282,20 @@ export default async function Home() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Try the AI reply */}
+      <section className="section" aria-labelledby="demo-title">
+        <div className="container-page">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <p className="eyebrow">Try it</p>
+            <h2 id="demo-title" className="h2 mt-2">
+              See the AI reply in your customer&rsquo;s language
+            </h2>
+            <p className="lead mt-4">Pick an enquiry and a language. Maa One drafts the reply — you just approve.</p>
+          </div>
+          <LazyAiDemo />
         </div>
       </section>
 

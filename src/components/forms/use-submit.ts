@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FieldErrors } from "@/lib/validation";
+import { resetTurnstile } from "./turnstile";
 
 type State =
   | { status: "idle" | "submitting" }
@@ -32,9 +33,11 @@ export function useSubmit(endpoint: string) {
           alreadyJoined: Boolean(json.alreadyJoined),
         });
       } else if (res.status === 422 && json.errors) {
+        resetTurnstile();
         setErrors(json.errors);
         setState({ status: "idle" });
       } else {
+        resetTurnstile();
         setState({ status: "error", message: json.error ?? "Something went wrong. Please try again." });
       }
     } catch {

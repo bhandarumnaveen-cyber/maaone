@@ -15,9 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function WaitlistPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string }>;
+  searchParams: Promise<{ plan?: string; ref?: string; utm_source?: string }>;
 }) {
-  const [{ plan }, s, plans] = await Promise.all([searchParams, getSettings(), getPlans()]);
+  const [{ plan, ref, utm_source }, s, plans] = await Promise.all([searchParams, getSettings(), getPlans()]);
   const defaultPlan = plans.some((p) => p.code === plan) ? plan! : "";
   const perks = [
     { icon: CalendarCheck, text: "A chance to join the pilot in December 2026" },
@@ -43,7 +43,7 @@ export default async function WaitlistPage({
             ))}
           </ul>
         </div>
-        <WaitlistForm plans={plans} defaultPlan={defaultPlan} />
+        <WaitlistForm plans={plans} defaultPlan={defaultPlan} referral={ref} utm={utm_source} />
       </div>
     </section>
   );
