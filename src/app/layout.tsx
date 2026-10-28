@@ -1,15 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { themeScript } from "@/lib/theme";
 import { SettingsProvider } from "@/components/settings-provider";
 import { JsonLd } from "@/components/json-ld";
 import { getSettings } from "@/lib/settings";
 import { site } from "@/site.config";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+// Inter (variable, Latin only). Other scripts and ₹ fall back to the system font, which saves an 85 KB download.
+const inter = localFont({
+  src: "./fonts/inter-latin-var.woff2",
+  weight: "100 900",
+  style: "normal",
+  variable: "--font-inter",
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -59,11 +65,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           }}
         />
         <SettingsProvider value={settings}>
-          <Header />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          {children}
         </SettingsProvider>
       </body>
     </html>

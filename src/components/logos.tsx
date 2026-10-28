@@ -1,35 +1,29 @@
 import Link from "next/link";
 import { site } from "@/site.config";
 
-/** Maa One mark: an indigo tile with a saffron dot — "one" place for everything. */
-export function MaaOneMark({ className = "h-8 w-8" }: { className?: string }) {
+/** The brand logo image. `className` sets the height; width follows the aspect ratio. */
+export function BrandLogo({ className = "h-12", priority }: { className?: string; priority?: boolean }) {
+  const l = site.logo;
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect width="32" height="32" rx="9" fill="#3730A3" />
-      <path
-        d="M8 22V11.5c0-.6.7-.9 1.1-.5l5.5 5.6c.8.8 2 .8 2.8 0l5.5-5.6c.4-.4 1.1-.1 1.1.5V22"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="16" cy="24.2" r="2.2" fill="#F59E0B" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={l.src}
+      srcSet={l.srcSet}
+      sizes="(min-width: 640px) 200px, 160px"
+      width={l.width}
+      height={l.height}
+      alt="Maa One — Business Growth Platform, a Maa Labs product"
+      className={`w-auto ${className}`}
+      fetchPriority={priority ? "high" : undefined}
+      decoding="async"
+    />
   );
 }
 
-export function MaaOneLogo({ href = "/" }: { href?: string }) {
+export function MaaOneLogo({ href = "/", className = "h-12 sm:h-[52px]" }: { href?: string; className?: string }) {
   return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-2 rounded-lg font-bold tracking-tight text-ink"
-      aria-label={`${site.name} home`}
-    >
-      <MaaOneMark />
-      <span className="text-lg whitespace-nowrap">
-        Maa <span className="text-brand-ink">One</span>
-      </span>
+    <Link href={href} className="inline-flex shrink-0 items-center rounded-lg" aria-label={`${site.name} home`}>
+      <BrandLogo className={className} priority />
     </Link>
   );
 }

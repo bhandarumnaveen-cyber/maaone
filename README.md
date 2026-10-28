@@ -21,6 +21,9 @@ npm run lint && npm run build
   and `plans`. Pages re-read them every 5 minutes — no redeploy needed.
 - [`src/site.config.ts`](src/site.config.ts): roadmap versions, modules, FAQs, brand credits, and fallback
   settings/plans used only if Supabase can't be reached.
+- `assets/source/`: original brand logo, app screens and banners. Run `node scripts/build-images.mjs` after
+  changing them: it cuts out the device backgrounds and writes the optimised WebP files to `public/images`,
+  the logo to `public/brand` and the share image to `src/app/opengraph-image.jpg`.
 - `content/blog/*.mdx` and `content/changelog/*.mdx`: posts and releases (files starting with `_` or
   marked `draft: true` are not published; see `content/changelog/_template.mdx`).
 - Environment variables: see `.env.example`. `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`,
@@ -31,6 +34,8 @@ npm run lint && npm run build
    For phone login, connect an SMS provider under Auth → Providers → Phone. Add `https://one.maalabs.in` to
    Auth → URL Configuration.
 2. **Admin**: log in once at `/login`, then run the "MAKE YOURSELF ADMIN" line at the end of the schema file.
+   Admins land on `/admin` after login; customers on `/account`. Both have a profile page and log out
+   (this device or all devices) in the avatar menu.
 3. **Razorpay** (test mode first):
    - Create one plan per plan and period. Amount = price **including GST**
      (`plans.price_inr_monthly_with_gst` / `price_inr_yearly_with_gst`), period monthly or yearly.

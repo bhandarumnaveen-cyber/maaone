@@ -36,7 +36,7 @@ export async function Footer() {
   const s = await getSettings();
   const cta = primaryCta(s);
   return (
-    <footer className="border-t border-line bg-surface">
+    <footer className="dark border-t border-white/10 bg-[linear-gradient(180deg,#14123a_0%,#0e0d26_100%)] text-ink">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <MaaOneLogo />
