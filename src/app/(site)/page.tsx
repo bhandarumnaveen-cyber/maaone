@@ -11,6 +11,7 @@ import {
   Languages,
   MessageCircle,
   PhoneMissed,
+  PlayCircle,
   Send,
   ShieldCheck,
   Sparkles,
@@ -21,7 +22,7 @@ import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchStrip } from "@/components/launch-strip";
 import { AppImage, type AppImageName } from "@/components/app-image";
-import { LazyAiDemo, LazyLossCalculator } from "@/components/lazy-widgets";
+import { LazyAiDemo, LazyLossCalculator, LazyProductTour } from "@/components/lazy-widgets";
 import { FeatureBlocks } from "@/components/feature-blocks";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
 import { PricingPreview } from "@/components/pricing-preview";
@@ -150,8 +151,8 @@ export default async function Home() {
               <ButtonLink href={cta.href} size="lg" className="shadow-lg shadow-indigo-600/25">
                 {cta.label} <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </ButtonLink>
-              <ButtonLink href="#see-it" variant="secondary" size="lg">
-                See how it works
+              <ButtonLink href="#demo" variant="secondary" size="lg">
+                <PlayCircle className="h-5 w-5 text-brand-ink" aria-hidden="true" /> Watch the demo
               </ButtonLink>
             </div>
             <p className="mt-4 text-sm text-muted">
@@ -186,10 +187,10 @@ export default async function Home() {
             Your customers reach you in four different places. By the time you reply, they have
             already called someone else.
           </SectionHeading>
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
-            <div className="card p-6">
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="card reveal p-6 md:col-span-2 lg:col-span-1">
               <h3 className="font-semibold text-ink">Leads come from 4 places</h3>
-              <ul className="mt-4 grid grid-cols-2 gap-3">
+              <ul className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-2">
                 {sources.map((s) => (
                   <li key={s.label} className="flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2.5 text-sm font-medium text-ink">
                     <s.icon className="h-4 w-4 shrink-0 text-brand-ink" aria-hidden="true" />
@@ -198,7 +199,7 @@ export default async function Home() {
                 ))}
               </ul>
             </div>
-            <div className="card p-6">
+            <div className="card reveal p-6">
               <Clock className="h-8 w-8 text-accent-ink" aria-hidden="true" />
               <h3 className="mt-4 font-semibold text-ink">Replies are late</h3>
               <p className="mt-2 text-muted">
@@ -206,7 +207,7 @@ export default async function Home() {
                 writing a good reply in the customer&rsquo;s language takes time you don&rsquo;t have.
               </p>
             </div>
-            <div className="card p-6">
+            <div className="card reveal p-6">
               <UserX className="h-8 w-8 text-accent-ink" aria-hidden="true" />
               <h3 className="mt-4 font-semibold text-ink">Customers are lost</h3>
               <p className="mt-2 text-muted">
@@ -218,8 +219,28 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Product demo */}
+      <section
+        id="demo"
+        aria-labelledby="tour-title"
+        className="relative scroll-mt-16 overflow-hidden bg-[linear-gradient(160deg,#1e1b4b_0%,#2a2580_55%,#3730a3_100%)] py-16 text-white sm:py-24"
+      >
+        <div className="pointer-events-none absolute -top-32 -left-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -right-24 -bottom-32 h-96 w-96 rounded-full bg-amber-400/15 blur-3xl" aria-hidden="true" />
+        <div className="container-page relative">
+          <div className="mx-auto mb-10 max-w-2xl text-center lg:mb-14">
+            <p className="text-sm font-semibold tracking-wide text-amber-300 uppercase">Product demo · 25 seconds</p>
+            <h2 id="tour-title" className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+              From WhatsApp enquiry to paid invoice
+            </h2>
+            <p className="mt-4 text-lg text-indigo-100">Watch one real-life lead go through Maa One — the way it will work on your phone.</p>
+          </div>
+          <LazyProductTour />
+        </div>
+      </section>
+
       {/* Cost of slow replies */}
-      <section className="section pt-0" aria-labelledby="calc-title">
+      <section className="section" aria-labelledby="calc-title">
         <div className="container-page">
           <div className="mx-auto mb-10 max-w-2xl text-center">
             <p className="eyebrow">Do the maths</p>
@@ -237,7 +258,7 @@ export default async function Home() {
           <SectionHeading eyebrow="How it works" title="Three steps to never miss a customer" />
           <ol className="mt-12 grid gap-6 md:grid-cols-3">
             {steps.map((s, i) => (
-              <li key={s.title} className="relative rounded-xl border border-line bg-bg p-6">
+              <li key={s.title} className="reveal relative rounded-xl border border-line bg-bg p-6 transition-shadow hover:shadow-lg hover:shadow-indigo-900/5">
                 <span className="absolute top-6 right-6 text-5xl font-extrabold text-brand-ink/10" aria-hidden="true">
                   {i + 1}
                 </span>
@@ -353,9 +374,12 @@ export default async function Home() {
       <section className="section border-y border-line bg-surface">
         <div className="container-page">
           <SectionHeading eyebrow="Why Maa One" title="Made for how India does business" />
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {reasons.map((r) => (
-              <li key={r.title} className="rounded-xl border border-line bg-bg p-5">
+          <ul className="mt-12 grid gap-4 sm:grid-cols-6 sm:gap-5 lg:grid-cols-5">
+            {reasons.map((r, i) => (
+              <li
+                key={r.title}
+                className={`reveal rounded-xl border border-line bg-bg p-5 transition-shadow hover:shadow-lg hover:shadow-indigo-900/5 lg:col-span-1 ${i < 3 ? "sm:col-span-2" : "sm:col-span-3"}`}
+              >
                 <r.icon className="h-6 w-6 text-brand-ink" aria-hidden="true" />
                 <h3 className="mt-3 font-semibold text-ink">{r.title}</h3>
                 <p className="mt-1.5 text-sm text-muted">{r.body}</p>

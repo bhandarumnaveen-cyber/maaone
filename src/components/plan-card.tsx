@@ -12,7 +12,10 @@ export function CardShell({
   note,
   cta,
   features,
+  wide = false,
 }: {
+  /** Spans two columns on tablets (price on the left, features on the right); a normal card on desktop. */
+  wide?: boolean;
   name: string;
   summary: string;
   popular?: boolean;
@@ -26,6 +29,7 @@ export function CardShell({
     <article
       className={clsx(
         "card relative flex flex-col p-5",
+        wide && "sm:col-span-2 sm:grid sm:grid-cols-2 sm:items-center sm:gap-x-8 lg:col-span-1 lg:flex lg:items-stretch",
         popular && "border-brand-ink/60 shadow-xl shadow-brand/10 ring-1 ring-brand-ink/40",
       )}
     >
@@ -34,17 +38,19 @@ export function CardShell({
           Most popular
         </span>
       )}
-      <h3 className="text-lg font-semibold text-ink">{name}</h3>
-      <p className="mt-1 min-h-[2.5rem] text-sm text-muted">{summary}</p>
-      <p className="mt-4 flex items-baseline gap-1">
-        <span className="text-3xl font-bold tracking-tight text-ink">{price}</span>
-        <span className="text-sm text-muted">{unit}</span>
-      </p>
-      <p className="mt-1 h-5 text-xs text-muted">{note}</p>
-      <ButtonLink href={cta.href} variant={popular ? "primary" : "secondary"} className="mt-5 w-full">
-        {cta.label}
-      </ButtonLink>
-      <ul className="mt-5 space-y-2.5 text-sm">
+      <div className="flex flex-col">
+        <h3 className="text-lg font-semibold text-ink">{name}</h3>
+        <p className="mt-1 min-h-[2.5rem] text-sm text-muted">{summary}</p>
+        <p className="mt-4 flex items-baseline gap-1">
+          <span className="text-3xl font-bold tracking-tight text-ink">{price}</span>
+          <span className="text-sm text-muted">{unit}</span>
+        </p>
+        <p className="mt-1 h-5 text-xs text-muted">{note}</p>
+        <ButtonLink href={cta.href} variant={popular ? "primary" : "secondary"} className="mt-5 w-full">
+          {cta.label}
+        </ButtonLink>
+      </div>
+      <ul className={clsx("mt-5 space-y-2.5 text-sm", wide && "sm:mt-0 lg:mt-5")}>
         {features.map((f) => (
           <li key={f} className="flex gap-2 text-ink">
             <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
