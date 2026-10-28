@@ -188,7 +188,7 @@ export async function sendInvoiceEmail(to: string, invoice: InvoiceRow, pdf: Uin
           : "We have received your payment.",
         `Amount paid: ${amount}. Your GST invoice ${invoice.invoice_number} is attached and is always available in your account.`,
       ],
-      button: { label: `Open ${site.name}`, href: s.appUrl },
+      button: s.appReady ? { label: `Open ${site.name}`, href: s.appUrl } : { label: "Go to my account", href: `${site.url}/account` },
       supportEmail: s.supportEmail,
     }),
     attachments: [{ filename: `${invoice.invoice_number.replace(/\//g, "-")}.pdf`, content: pdf }],
@@ -211,7 +211,7 @@ export async function sendTrialStartedEmail(to: string, planName: string, trialE
           ? `Your first payment will be taken on ${ends}. Cancel any time before then from your account and you won't be charged.`
           : "Cancel any time from your account.",
       ],
-      button: { label: `Open ${site.name}`, href: s.appUrl },
+      button: s.appReady ? { label: `Open ${site.name}`, href: s.appUrl } : { label: "Go to my account", href: `${site.url}/account` },
       supportEmail: s.supportEmail,
     }),
   });

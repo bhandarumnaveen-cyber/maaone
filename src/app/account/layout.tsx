@@ -21,13 +21,20 @@ export default async function AccountLayout({ children }: { children: React.Reac
     <AppShell
       area="My account"
       user={{ name, detail: user.email ?? user.phone ?? "" }}
-      primaryLink={{ href: settings.appUrl, label: "Open Maa One" }}
+      primaryLink={
+        settings.appReady
+          ? { href: settings.appUrl, label: "Open Maa One", external: true }
+          : {
+              href: "/roadmap",
+              label: `App opens ${new Date(settings.launchDateIso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}`,
+            }
+      }
       menuLinks={[
         { href: "/account/profile", label: "My profile", icon: "profile" },
         { href: "/account/subscription", label: "My subscription", icon: "account" },
         ...(profile?.is_admin ? [{ href: "/admin", label: "Admin console", icon: "admin" as const }] : []),
         { href: "/", label: "View website", icon: "site" },
-        { href: settings.appUrl, label: "Open Maa One app", icon: "app", external: true },
+        ...(settings.appReady ? [{ href: settings.appUrl, label: "Open Maa One app", icon: "app" as const, external: true }] : []),
       ]}
       nav={[
         { href: "/account", label: "Overview", icon: "dashboard" },

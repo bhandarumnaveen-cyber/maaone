@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, ExternalLink, Sparkles } from "lucide-react";
+import { CalendarClock, ExternalLink, Rocket, Sparkles } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { subStatus, type AccountSub } from "@/lib/account";
 import type { Plan, Settings } from "@/lib/types";
@@ -50,7 +50,7 @@ export function SubscriptionCard({
 
   return (
     <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
-      <div className="relative bg-[linear-gradient(135deg,#1e1b4b,#3730a3)] p-6 text-white sm:p-8">
+      <div className="relative overflow-hidden bg-[linear-gradient(135deg,#1e1b4b,#3730a3)] p-6 text-white sm:p-8">
         <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" aria-hidden="true" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -64,12 +64,18 @@ export function SubscriptionCard({
               {formatMoney(withGst, "INR")} total
             </p>
           </div>
-          <a
-            href={settings.appUrl}
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:bg-amber-300"
-          >
-            Open Maa One <ExternalLink className="h-4 w-4" aria-hidden="true" />
-          </a>
+          {settings.appReady ? (
+            <a
+              href={settings.appUrl}
+              className="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:bg-amber-300"
+            >
+              Open Maa One <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            </a>
+          ) : (
+            <span className="inline-flex items-center gap-2 rounded-xl border border-amber-300/40 bg-amber-400/15 px-4 py-2.5 text-sm font-bold text-amber-200">
+              <Rocket className="h-4 w-4" aria-hidden="true" /> App opens on {settings.launchDateLabel}
+            </span>
+          )}
         </div>
         <div className="relative mt-6 inline-flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm">
           <CalendarClock className="h-4 w-4 text-amber-300" aria-hidden="true" />
