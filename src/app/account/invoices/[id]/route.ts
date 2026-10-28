@@ -1,3 +1,4 @@
+import { redirectTo } from "@/lib/redirect";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -8,7 +9,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return NextResponse.redirect(new URL(`/login?next=/account`, req.url));
+  if (!user) return redirectTo("/login?next=/account");
 
   const { data: invoice } = await supabase.from("invoices").select("pdf_path").eq("id", id).maybeSingle();
   if (!invoice?.pdf_path) return new NextResponse("Invoice not found", { status: 404 });
