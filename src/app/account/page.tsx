@@ -61,7 +61,7 @@ export default async function AccountOverview({ searchParams }: { searchParams: 
             </a>
           ) : (
             <p className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-accent-soft px-3 py-1 text-sm font-semibold text-accent-ink">
-              App opens on {settings.launchDateLabel}
+              App opens in {settings.launchYear}
             </p>
           )}
           <AppImage name="phone-home" sizes="180px" className="mx-auto -mb-24 mt-4 w-44 drop-shadow-xl" />

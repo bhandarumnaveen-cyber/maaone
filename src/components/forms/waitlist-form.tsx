@@ -26,7 +26,7 @@ export function WaitlistForm({
   utm?: string;
 }) {
   const { state, errors, onSubmit } = useSubmit("/api/waitlist");
-  const { launchDateLabel } = useSettings();
+  const { launchYear } = useSettings();
   // Fall back to a referral/campaign seen earlier in this visit (e.g. landed on the home page first).
   const [attr, setAttr] = useState<{ ref?: string; utm?: string }>({ ref: referral, utm });
   useEffect(() => {
@@ -46,7 +46,7 @@ export function WaitlistForm({
           </p>
         ) : null}
         <p className="mt-2 text-muted">
-          We&rsquo;ll write to you before the pilot and again on launch day, {launchDateLabel}.
+          We&rsquo;ll write to you before the free pilot and again on launch day in {launchYear}.
         </p>
         {state.position ? <ShareReferral position={state.position} /> : null}
       </div>

@@ -26,7 +26,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
           ? { href: settings.appUrl, label: "Open Maa One", external: true }
           : {
               href: "/roadmap",
-              label: `App opens ${new Date(settings.launchDateIso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}`,
+              label: `App opens in ${settings.launchYear}`,
             }
       }
       menuLinks={[

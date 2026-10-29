@@ -27,7 +27,7 @@ export function SubscriptionCard({
         <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" aria-hidden="true" />
         <Sparkles className="h-8 w-8 text-amber-300" aria-hidden="true" />
         <h2 className="mt-4 text-2xl font-bold">
-          {settings.salesOpen ? `Start your ${settings.trialDays}-day free trial` : `Subscriptions open on ${settings.launchDateLabel}`}
+          {settings.salesOpen ? `Start your ${settings.trialDays}-day free trial` : `Subscriptions open in ${settings.launchYear}`}
         </h2>
         <p className="mt-2 max-w-lg text-indigo-100">
           {settings.salesOpen
@@ -73,7 +73,7 @@ export function SubscriptionCard({
             </a>
           ) : (
             <span className="inline-flex items-center gap-2 rounded-xl border border-amber-300/40 bg-amber-400/15 px-4 py-2.5 text-sm font-bold text-amber-200">
-              <Rocket className="h-4 w-4" aria-hidden="true" /> App opens on {settings.launchDateLabel}
+              <Rocket className="h-4 w-4" aria-hidden="true" /> App opens in {settings.launchYear}
             </span>
           )}
         </div>

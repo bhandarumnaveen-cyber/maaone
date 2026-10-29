@@ -94,7 +94,7 @@ export function ReleaseBadge({ version, className }: { version: VersionId; class
         live ? "bg-success-soft text-success" : "bg-brand-soft text-brand-ink",
         className,
       )}
-      title={live ? undefined : `Planned for ${versionById[version].month}`}
+      title={live ? undefined : `Planned: ${versionById[version].when}`}
     >
       {live ? (
         <>

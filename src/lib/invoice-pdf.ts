@@ -186,7 +186,7 @@ export async function renderInvoicePdf(inv: InvoiceRow, opts: { supportEmail: st
       y -= 11;
     }
   }
-  text(`${site.company} | Founder & Director: ${site.founder} | ${opts.supportEmail}`, L, 40, { size: 7, color: MUTED });
+  text(`${site.company} | ${site.founderTitle}: ${site.founder} | ${opts.supportEmail}`, L, 40, { size: 7, color: MUTED });
 
   return doc.save();
 }

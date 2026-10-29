@@ -26,7 +26,7 @@ export default async function ChangelogPage() {
           {releases.length === 0 ? (
             <div className="card p-6 text-center">
               <p className="font-semibold text-ink">No releases yet</p>
-              <p className="mt-1 text-muted">Maa One v1 ships in January 2027. Every release will be listed here.</p>
+              <p className="mt-1 text-muted">Maa One v1 launches in 2027. Every release will be listed here.</p>
             </div>
           ) : (
             <ol className="space-y-12">

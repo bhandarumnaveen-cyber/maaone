@@ -28,7 +28,7 @@ const steps = [
 
 export default async function HindiHome() {
   const [settings, plans] = await Promise.all([getSettings(), getPlans()]);
-  const launch = new Date(settings.launchDateIso).toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+  const launch = settings.launchYear;
   const cheapest = Math.min(...plans.map((p) => p.inrMonthly));
   const cta = settings.salesOpen
     ? { label: `${settings.trialDays} दिन का फ़्री ट्रायल शुरू करें`, href: "/signup?plan=growth" }
@@ -146,7 +146,7 @@ export default async function HindiHome() {
           <div className="relative overflow-hidden rounded-2xl bg-brand px-6 py-12 text-center sm:px-12 sm:py-16">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">पूरा बिज़नेस, एक ऐप में।</h2>
             <p className="mx-auto mt-3 max-w-xl text-lg text-indigo-100">
-              {settings.salesOpen ? `${settings.trialDays} दिन मुफ़्त आज़माइए।` : `${launch} को लॉन्च। आज ही वेटलिस्ट से जुड़ें।`}
+              {settings.salesOpen ? `${settings.trialDays} दिन मुफ़्त आज़माइए।` : `${launch} में लॉन्च। आज ही वेटलिस्ट से जुड़ें।`}
             </p>
             <ButtonLink href={cta.href} variant="accent" size="lg" className="mt-8">
               {cta.label} <ArrowRight className="h-4 w-4" aria-hidden="true" />

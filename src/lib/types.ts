@@ -2,8 +2,8 @@ export type Settings = {
   salesOpen: boolean;
   /** YYYY-MM-DD */
   launchDate: string;
-  launchDateIso: string;
-  launchDateLabel: string;
+  /** The launch year ("2027") — the only part of the launch date shown on the site. */
+  launchYear: string;
   trialDays: number;
   gstRate: number;
   supportEmail: string;

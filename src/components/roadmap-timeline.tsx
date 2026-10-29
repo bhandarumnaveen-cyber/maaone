@@ -31,7 +31,7 @@ export function RoadmapTimeline({ compact = false }: { compact?: boolean }) {
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="rounded-lg bg-brand px-2 py-0.5 text-sm font-bold text-white">{v.id}</span>
-                <span className="text-sm font-medium text-muted">{v.month}</span>
+                <span className="text-sm font-medium text-muted">{v.when}</span>
                 <StatusBadge status={v.status} />
               </div>
               <h3 className="mt-3 text-lg font-semibold text-ink">{v.name}</h3>

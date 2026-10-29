@@ -47,7 +47,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       title: String(p.data.title),
       description: String(p.data.description ?? ""),
       date: toDay(p.data.date),
-      author: String(p.data.author ?? "Naveen Goyal"),
+      author: String(p.data.author ?? "Naveen Goyal & Shiwani Mehra"),
       body: p.body,
     }))
     .sort(byDateDesc);

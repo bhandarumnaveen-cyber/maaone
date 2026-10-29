@@ -61,7 +61,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             name: site.company,
             url: site.url,
             email: settings.supportEmail,
-            founder: { "@type": "Person", name: site.founder, jobTitle: site.founderTitle },
+            founder: site.founders.map((name) => ({ "@type": "Person", name, jobTitle: "Founder & Director" })),
             sameAs: [settings.instagramUrl],
             brand: { "@type": "Brand", name: site.name },
           }}

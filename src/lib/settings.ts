@@ -33,13 +33,8 @@ function buildSettings(raw: Record<string, unknown>): Settings {
   return {
     salesOpen: raw.sales_open === undefined ? fallbackSettings.salesOpen : raw.sales_open === true,
     launchDate: launchDay,
-    launchDateIso: `${launchDay}T00:00:00+05:30`,
-    launchDateLabel: new Date(`${launchDay}T00:00:00+05:30`).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      timeZone: "Asia/Kolkata",
-    }),
+    // Only the year is shown publicly; the exact day stays internal.
+    launchYear: launchDay.slice(0, 4),
     trialDays: num("trial_days", fallbackSettings.trialDays),
     gstRate: num("gst_rate", fallbackSettings.gstRate),
     supportEmail: str("support_email", fallbackSettings.supportEmail),

@@ -220,7 +220,7 @@ const make = (subject: string, l: Layout, brand: Brand): Email => ({ ...render(l
 /* Customer emails                                                     */
 /* ------------------------------------------------------------------ */
 
-export function welcomeEmail(b: Brand, o: { name?: string | null; salesOpen: boolean; launchDateLabel: string; trialDays: number }) {
+export function welcomeEmail(b: Brand, o: { name?: string | null; salesOpen: boolean; launchYear: string; trialDays: number }) {
   return make(
     `Welcome to Maa One, ${firstName(o.name)}`,
     {
@@ -239,7 +239,7 @@ export function welcomeEmail(b: Brand, o: { name?: string | null; salesOpen: boo
               ]
             : [
                 "**Complete your profile** so we know who to reach for the pilot.",
-                `**Maa One opens on ${o.launchDateLabel}.** We'll email you the day it does, with a ${o.trialDays}-day free trial.`,
+                `**Maa One opens in ${o.launchYear}.** We'll email you the day it does, with a ${o.trialDays}-day free trial.`,
                 "**Tell a friend** — businesses that join early get invited to the pilot first.",
               ],
         },
@@ -252,7 +252,7 @@ export function welcomeEmail(b: Brand, o: { name?: string | null; salesOpen: boo
   );
 }
 
-export function waitlistEmail(b: Brand, o: { name: string; position?: number; launchDateLabel: string; trialDays: number }) {
+export function waitlistEmail(b: Brand, o: { name: string; position?: number; launchYear: string; trialDays: number }) {
   const link = o.position ? `${b.siteUrl}/waitlist?ref=${o.position}` : `${b.siteUrl}/waitlist`;
   return make(
     `You're on the Maa One waitlist${o.position ? ` — #${o.position}` : ""}`,
@@ -262,7 +262,7 @@ export function waitlistEmail(b: Brand, o: { name: string; position?: number; la
       heading: `You're in, ${firstName(o.name)}!`,
       blocks: [
         ...(o.position ? [{ type: "big" as const, value: `#${o.position}`, label: "your place on the waitlist" }] : []),
-        { type: "p", text: `Thank you for joining. We'll write before the **free pilot in December 2026** and again on **launch day, ${o.launchDateLabel}**, when your ${o.trialDays}-day free trial opens.` },
+        { type: "p", text: `Thank you for joining. We'll write before the **free pilot** and again on **launch day in ${o.launchYear}**, when your ${o.trialDays}-day free trial opens.` },
         { type: "callout", tone: "info", text: `**Move up the list:** share your link with other business owners. People who refer others are invited to the pilot first.\n${link}` },
       ],
       button: { label: "Share on WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`I just joined the Maa One waitlist — one app for every lead, reply and payment. Join here: ${link}`)}` },
@@ -406,7 +406,7 @@ export function cancelledEmail(b: Brand, o: { endsAt: string | null; scheduled: 
           text: o.scheduled && ends ? `You can keep using Maa One until **${ends}**. You won't be charged again.` : "You won't be charged again. Your invoices stay available in your account.",
         },
         { type: "callout", tone: "info", text: "Changed your mind? You can start again any time from your account — your details are saved." },
-        { type: "p", text: "We'd really like to know what we could do better. Just reply to this email — Naveen reads every reply." },
+        { type: "p", text: "We'd really like to know what we could do better. Just reply to this email — Naveen and Shiwani read every reply." },
       ],
       button: { label: "Go to my account", href: `${b.siteUrl}/account` },
       reason: "You're receiving this because your Maa One subscription was cancelled.",
