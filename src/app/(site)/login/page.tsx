@@ -12,8 +12,9 @@ export const metadata: Metadata = {
 };
 
 /** Only allow same-site relative redirects. */
+/** Only same-site paths: no "//host", no backslashes ("/\\host" is read as "//host"), no control characters. */
 function safeNext(next?: string) {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/auth/continue";
+  return next && /^\/(?![/\\])[^\\\s]*$/.test(next) ? next : "/auth/continue";
 }
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; signedout?: string }> }) {
