@@ -3,6 +3,7 @@ import { Download, FileText } from "lucide-react";
 import { loadAccount } from "@/lib/account";
 import { formatMoney } from "@/lib/format";
 import { EmptyState, PageHeader, Pill, istDate } from "@/components/dashboard-ui";
+import { RefundRequest } from "@/components/account/refund-request";
 
 export const metadata = { title: "Invoices" };
 
@@ -14,6 +15,13 @@ export default async function InvoicesPage() {
     .select("id, invoice_number, invoice_date, description, subtotal, total, currency, status, pdf_path")
     .eq("user_id", acct.user.id)
     .order("invoice_date", { ascending: false });
+  const { data: refundTickets } = await acct.supabase
+    .from("support_tickets")
+    .select("subject")
+    .eq("user_id", acct.user.id)
+    .like("subject", "Refund request · %")
+    .neq("status", "closed");
+  const refundPending = new Set((refundTickets ?? []).map((t) => t.subject.replace("Refund request · ", "")));
 
   return (
     <>
@@ -53,6 +61,11 @@ export default async function InvoicesPage() {
                 </a>
               ) : (
                 <span className="text-xs text-muted">Preparing PDF…</span>
+              )}
+              {inv.status !== "cancelled" && (
+                <div className="w-full border-t border-line pt-3">
+                  <RefundRequest invoiceId={inv.id} invoiceNumber={inv.invoice_number} pending={refundPending.has(inv.invoice_number)} />
+                </div>
               )}
             </li>
           ))}

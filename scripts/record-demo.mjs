@@ -24,21 +24,32 @@ const viewport = format === "landscape" ? { width: 960, height: 540 } : { width:
 const fps = 30;
 const holdEndMs = 2_000;
 
+const workers = Number(process.env.WORKERS ?? 6);
 const dir = mkdtempSync(path.join(tmpdir(), "maaone-demo-"));
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
-await page.goto(`${base}/demo/reel?format=${format}`, { waitUntil: "networkidle" });
-await page.waitForFunction(() => window.__maaOneFilm);
-const length = await page.evaluate(() => window.__maaOneFilm.length);
-
+const open = async () => {
+  const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
+  await page.goto(`${base}/demo/reel?format=${format}`, { waitUntil: "networkidle" });
+  await page.waitForFunction(() => window.__maaOneFilm);
+  return page;
+};
+const first = await open();
+const length = await first.evaluate(() => window.__maaOneFilm.length);
 const frames = Math.round(((length + holdEndMs) / 1000) * fps);
-for (let i = 0; i < frames; i++) {
-  const t = Math.min(length, (i * 1000) / fps);
-  await page.evaluate((ms) => window.__maaOneFilm.seek(ms), t);
-  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
-  await page.screenshot({ path: path.join(dir, `f${String(i).padStart(5, "0")}.png`) });
-  if (i % 150 === 0) console.log(`frame ${i}/${frames}`);
-}
+
+// Several pages render interleaved frames in parallel.
+let done = 0;
+const render = async (page, w) => {
+  for (let i = w; i < frames; i += workers) {
+    const t = Math.min(length, (i * 1000) / fps);
+    await page.evaluate((ms) => window.__maaOneFilm.seek(ms), t);
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await page.screenshot({ path: path.join(dir, `f${String(i).padStart(5, "0")}.png`) });
+    if (++done % 150 === 0) console.log(`frame ${done}/${frames}`);
+  }
+};
+const pages = [first, ...(await Promise.all(Array.from({ length: workers - 1 }, open)))];
+await Promise.all(pages.map((p, w) => render(p, w)));
 await browser.close();
 
 execFileSync(

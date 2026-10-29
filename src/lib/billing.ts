@@ -1,11 +1,21 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { emailLayout, sendEmail } from "./email";
+import { adminAlertAddress, getBrand, sendEmail } from "./email";
+import {
+  adminAlertEmail,
+  cancelledEmail,
+  istDate,
+  paymentFailedEmail,
+  paymentReceivedEmail,
+  planChangedEmail,
+  renewalReminderEmail,
+  trialStartedEmail,
+  waitlistEmail,
+} from "./email-templates";
 import { invoicePdfPath, renderInvoicePdf, type InvoiceRow } from "./invoice-pdf";
 import { unixToIso, unixToIstDate, type RzpPayment, type RzpSubscription } from "./razorpay";
 import { getSettings } from "./settings";
 import { formatMoney } from "./format";
-import { site } from "@/site.config";
 
 type Period = "monthly" | "yearly";
 
@@ -169,129 +179,84 @@ export async function issueInvoiceWithPdf(
 }
 
 /* ------------------------------------------------------------------ */
-/* Customer emails                                                     */
+/* Customer emails (templates in email-templates.ts)                   */
 /* ------------------------------------------------------------------ */
 
-export async function sendInvoiceEmail(to: string, invoice: InvoiceRow, pdf: Uint8Array, firstPayment: boolean) {
-  const s = await getSettings();
-  const amount = formatMoney(invoice.total, invoice.currency);
-  await sendEmail({
+const periodLabel = (p: string) => (p === "yearly" ? "Yearly" : "Monthly");
+
+export async function sendInvoiceEmail(
+  to: string,
+  invoice: InvoiceRow,
+  pdf: Uint8Array,
+  firstPayment: boolean,
+  extra: { planName?: string; period?: string; nextDate?: string | null } = {},
+) {
+  const [b, s] = await Promise.all([getBrand(), getSettings()]);
+  await sendEmail(
     to,
-    subject: firstPayment
-      ? `Welcome to ${site.name} — your invoice ${invoice.invoice_number}`
-      : `${site.name} invoice ${invoice.invoice_number}`,
-    html: emailLayout({
-      heading: firstPayment ? `Welcome to ${site.name}!` : "Payment received — thank you",
-      paragraphs: [
-        firstPayment
-          ? "Your subscription is active. Everything you need to win more customers is waiting in the app."
-          : "We have received your payment.",
-        `Amount paid: ${amount}. Your GST invoice ${invoice.invoice_number} is attached and is always available in your account.`,
-      ],
-      button: s.appReady ? { label: `Open ${site.name}`, href: s.appUrl } : { label: "Go to my account", href: `${site.url}/account` },
-      supportEmail: s.supportEmail,
+    paymentReceivedEmail(b, {
+      first: firstPayment,
+      amount: formatMoney(invoice.total, invoice.currency),
+      invoiceNumber: invoice.invoice_number,
+      planName: extra.planName ?? "Maa One",
+      period: periodLabel(extra.period ?? "monthly"),
+      paidOn: istDate(invoice.invoice_date) ?? invoice.invoice_date,
+      nextDate: istDate(extra.nextDate),
+      appUrl: s.appUrl,
+      appReady: s.appReady,
     }),
-    attachments: [{ filename: `${invoice.invoice_number.replace(/\//g, "-")}.pdf`, content: pdf }],
-  });
+    { attachments: [{ filename: `${invoice.invoice_number.replace(/\//g, "-")}.pdf`, content: pdf }] },
+  );
 }
 
-export async function sendTrialStartedEmail(to: string, planName: string, trialEnds: string | null) {
-  const s = await getSettings();
-  const ends = trialEnds
-    ? new Date(trialEnds).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" })
-    : null;
-  await sendEmail({
+export async function sendTrialStartedEmail(to: string, plan: PlanRecord | null, sub: SubscriptionRow) {
+  const [b, s] = await Promise.all([getBrand(), getSettings()]);
+  const amount = plan ? priceFor(plan, sub.billing_period) : sub.amount;
+  await sendEmail(
     to,
-    subject: `Welcome to ${site.name} — your free trial has started`,
-    html: emailLayout({
-      heading: `Welcome to ${site.name}!`,
-      paragraphs: [
-        `Your ${s.trialDays}-day free trial of the ${planName} plan has started.`,
-        ends
-          ? `Your first payment will be taken on ${ends}. Cancel any time before then from your account and you won't be charged.`
-          : "Cancel any time from your account.",
-      ],
-      button: s.appReady ? { label: `Open ${site.name}`, href: s.appUrl } : { label: "Go to my account", href: `${site.url}/account` },
-      supportEmail: s.supportEmail,
+    trialStartedEmail(b, {
+      planName: plan?.name ?? sub.plan_code,
+      trialDays: s.trialDays,
+      trialEnds: sub.trial_ends_at,
+      firstCharge: `${formatMoney(Math.round(amount * (1 + s.gstRate / 100)), "INR")} incl. GST`,
+      appUrl: s.appUrl,
+      appReady: s.appReady,
     }),
-  });
+  );
 }
 
 export async function sendPaymentFailedEmail(to: string) {
-  const s = await getSettings();
-  await sendEmail({
-    to,
-    subject: `Action needed: your ${site.name} payment didn't go through`,
-    html: emailLayout({
-      heading: "Your payment didn't go through",
-      paragraphs: [
-        "We couldn't collect your latest subscription payment. Razorpay will retry automatically over the next few days.",
-        "Please check that your card or UPI mandate is active and has enough balance. If payments keep failing, your subscription will be paused.",
-      ],
-      button: { label: "Go to my account", href: `${site.url}/account` },
-      supportEmail: s.supportEmail,
-    }),
-  });
+  await sendEmail(to, paymentFailedEmail(await getBrand()));
 }
 
-export async function sendCancelledEmail(to: string, endsAt: string | null) {
-  const s = await getSettings();
-  const ends = endsAt
-    ? new Date(endsAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" })
-    : null;
-  await sendEmail({
-    to,
-    subject: `Your ${site.name} subscription is cancelled`,
-    html: emailLayout({
-      heading: "Your subscription is cancelled",
-      paragraphs: [
-        ends ? `You can keep using ${site.name} until ${ends}. You won't be charged again.` : "You won't be charged again.",
-        "We'd love to know what we could do better — just reply to this email.",
-      ],
-      supportEmail: s.supportEmail,
-    }),
-  });
+export async function sendCancelledEmail(to: string, endsAt: string | null, scheduled = false) {
+  await sendEmail(to, cancelledEmail(await getBrand(), { endsAt, scheduled }));
 }
 
 export async function sendRenewalReminderEmail(to: string, planName: string, amount: number, renewsOn: string) {
-  const s = await getSettings();
-  const date = new Date(renewsOn).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Kolkata",
-  });
-  await sendEmail({
+  const [b, s] = await Promise.all([getBrand(), getSettings()]);
+  await sendEmail(
     to,
-    subject: `Your ${site.name} plan renews on ${date}`,
-    html: emailLayout({
-      heading: "Renewal reminder",
-      paragraphs: [
-        `Your ${planName} plan renews on ${date} for ${formatMoney(Math.round(amount * (1 + s.gstRate / 100)), "INR")} including GST.`,
-        "Nothing to do if you'd like to continue. To change or cancel your plan, visit your account before then.",
-      ],
-      button: { label: "Manage my plan", href: `${site.url}/account` },
-      supportEmail: s.supportEmail,
+    renewalReminderEmail(b, {
+      planName,
+      amount: formatMoney(Math.round(amount * (1 + s.gstRate / 100)), "INR"),
+      date: istDate(renewsOn) ?? renewsOn,
     }),
-  });
+  );
 }
 
 export async function sendWaitlistEmail(to: string, name: string, position: number | undefined) {
-  const s = await getSettings();
-  await sendEmail({
-    to,
-    subject: `You're on the ${site.name} waitlist${position ? ` (#${position})` : ""}`,
-    html: emailLayout({
-      heading: `Thank you, ${name}!`,
-      paragraphs: [
-        position ? `You're number ${position} on the ${site.name} waitlist.` : `You're on the ${site.name} waitlist.`,
-        `We'll write to you before the pilot in December 2026 and again on launch day, ${s.launchDateLabel}, when your ${s.trialDays}-day free trial opens.`,
-        `Questions in the meantime? Reply to this email or WhatsApp us on ${s.whatsappDisplay}.`,
-      ],
-      button: { label: "See what's coming", href: `${site.url}/roadmap` },
-      supportEmail: s.supportEmail,
-    }),
-  });
+  const [b, s] = await Promise.all([getBrand(), getSettings()]);
+  await sendEmail(to, waitlistEmail(b, { name, position, launchDateLabel: s.launchDateLabel, trialDays: s.trialDays }));
+}
+
+export async function sendPlanChangedEmail(to: string, o: { from: string; to: string; period: string; when: "now" | "renewal"; date?: string | null }) {
+  await sendEmail(to, planChangedEmail(await getBrand(), { ...o, period: periodLabel(o.period), date: istDate(o.date) }));
+}
+
+/** Alert to the Maa One team; never blocks the request that triggered it. */
+export async function sendAdminAlert(o: Parameters<typeof adminAlertEmail>[1], replyTo?: string) {
+  await sendEmail(await adminAlertAddress(), adminAlertEmail(await getBrand(), o), { replyTo });
 }
 
 export { unixToIstDate };

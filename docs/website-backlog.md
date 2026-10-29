@@ -8,7 +8,7 @@ Last updated: 28 October 2026
 |---|---|---|
 | Analytics with cookie consent | `NEXT_PUBLIC_CLARITY_ID` and/or `NEXT_PUBLIC_GA_ID` | clarity.microsoft.com → new project → Settings → project ID; analytics.google.com → Admin → Data streams → Measurement ID (`G-…`) |
 | Spam protection on forms | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | dash.cloudflare.com → Turnstile → Add widget → domain `one.maalabs.in` |
-| Emails (waitlist, invoices, reminders) | `RESEND_API_KEY`, `EMAIL_FROM` | resend.com → verify `maalabs.in` → API Keys (planned with app v1) |
+| Emails (welcome, waitlist, payments, invoices, cancellation, refunds, support, admin alerts) | `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, `EMAIL_REPLY_TO`, `ADMIN_ALERT_EMAIL` | Hostinger hPanel → Emails → the noreply mailbox; preview and test at `/admin/emails` |
 | Payments | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` + plan IDs in /admin/settings | Razorpay dashboard (before 24 January 2027) |
 | Renewal reminders | `CRON_SECRET` + Hostinger cron job | see README |
 | GST invoice seller details | `INVOICE_SELLER_GSTIN`, `INVOICE_SELLER_ADDRESS`, `INVOICE_SAC` | your CA |

@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { serverError } from "@/lib/api";
 import { LIVE_STATUSES, requireUser } from "@/lib/auth";
-import { syncSubscription } from "@/lib/billing";
-import { razorpay, RazorpayError } from "@/lib/razorpay";
+import { emailForUser, sendCancelledEmail, syncSubscription } from "@/lib/billing";
+import { razorpay, RazorpayError, unixToIso } from "@/lib/razorpay";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /** Trial or unpaid: cancel now. Paid: cancel at the end of the period already paid for. */
@@ -24,7 +24,10 @@ export async function POST() {
   try {
     const updated = await razorpay.cancelSubscription(sub.razorpay_subscription_id, atCycleEnd);
     await syncSubscription(db, updated);
-    if (atCycleEnd) await db.from("subscriptions").update({ cancel_at_period_end: true }).eq("id", sub.id);
+    if (atCycleEnd) {
+      await db.from("subscriptions").update({ cancel_at_period_end: true }).eq("id", sub.id);
+      after(async () => sendCancelledEmail((await emailForUser(db, user.id, user.email)) ?? "", unixToIso(updated.current_end), true));
+    }
     return NextResponse.json({ ok: true, atCycleEnd });
   } catch (e) {
     if (e instanceof RazorpayError) return NextResponse.json({ ok: false, error: e.message }, { status: 502 });

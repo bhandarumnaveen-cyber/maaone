@@ -1,60 +1,72 @@
 import "server-only";
+import nodemailer, { type Transporter } from "nodemailer";
+import { getSettings } from "@/lib/settings";
 import { site } from "@/site.config";
+import type { Brand, Email } from "@/lib/email-templates";
 
 type Attachment = { filename: string; content: Uint8Array };
 
-/** Sends through Resend. Without RESEND_API_KEY it logs and skips, so flows keep working. */
-export async function sendEmail(opts: { to: string; subject: string; html: string; attachments?: Attachment[] }) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.info(`[email skipped: no RESEND_API_KEY] ${opts.subject} → ${opts.to}`);
+let transporter: Transporter | null = null;
+
+/** SMTP settings from the environment (Hostinger: smtp.hostinger.com, port 465, SSL). */
+function smtp() {
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  if (!user || !pass) return null;
+  const port = Number(process.env.SMTP_PORT || 465);
+  return { host: process.env.SMTP_HOST || "smtp.hostinger.com", port, secure: port === 465, auth: { user, pass } };
+}
+
+export const emailConfigured = () => smtp() !== null;
+
+function getTransporter() {
+  const cfg = smtp();
+  if (!cfg) return null;
+  transporter ??= nodemailer.createTransport({ ...cfg, pool: true, maxConnections: 2, connectionTimeout: 10_000, socketTimeout: 20_000 });
+  return transporter;
+}
+
+/** Brand details used by every template, from the live settings. */
+export async function getBrand(): Promise<Brand> {
+  const s = await getSettings();
+  return {
+    siteUrl: site.url,
+    supportEmail: s.supportEmail,
+    whatsappDisplay: s.whatsappDisplay,
+    whatsappLink: s.whatsappLink,
+    instagramUrl: s.instagramUrl,
+  };
+}
+
+/** Where admin alerts go (ADMIN_ALERT_EMAIL, else the support email). */
+export async function adminAlertAddress() {
+  return process.env.ADMIN_ALERT_EMAIL || (await getSettings()).supportEmail;
+}
+
+/**
+ * Sends one email through SMTP. Never throws: without SMTP settings, or if sending fails,
+ * it logs and returns false so the payment, signup or form that triggered it still succeeds.
+ */
+export async function sendEmail(to: string | null | undefined, email: Email, opts: { attachments?: Attachment[]; replyTo?: string } = {}) {
+  if (!to) return false;
+  const t = getTransporter();
+  if (!t) {
+    console.info(`[email skipped: SMTP not configured] ${email.subject} → ${to}`);
     return false;
   }
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.EMAIL_FROM || `${site.name} <hello@maalabs.in>`,
-        to: [opts.to],
-        subject: opts.subject,
-        html: opts.html,
-        attachments: opts.attachments?.map((a) => ({
-          filename: a.filename,
-          content: Buffer.from(a.content).toString("base64"),
-        })),
-      }),
+    await t.sendMail({
+      from: process.env.EMAIL_FROM || `${site.name} <${process.env.SMTP_USER}>`,
+      to,
+      replyTo: opts.replyTo || process.env.EMAIL_REPLY_TO || (await getSettings()).supportEmail,
+      subject: email.subject,
+      html: email.html,
+      text: email.text,
+      attachments: opts.attachments?.map((a) => ({ filename: a.filename, content: Buffer.from(a.content), contentType: "application/pdf" })),
     });
-    if (!res.ok) console.error("[email]", res.status, await res.text());
-    return res.ok;
+    return true;
   } catch (e) {
-    console.error("[email]", e);
+    console.error("[email]", email.subject, e);
     return false;
   }
-}
-
-const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
-/** Simple branded HTML email. `paragraphs` are plain text and get escaped. */
-export function emailLayout(opts: {
-  heading: string;
-  paragraphs: string[];
-  button?: { label: string; href: string };
-  supportEmail: string;
-}) {
-  const p = opts.paragraphs
-    .map((t) => `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155">${esc(t)}</p>`)
-    .join("");
-  const button = opts.button
-    ? `<p style="margin:22px 0"><a href="${esc(opts.button.href)}" style="background:#3730A3;color:#fff;text-decoration:none;padding:12px 20px;border-radius:12px;font-weight:600;display:inline-block">${esc(opts.button.label)}</a></p>`
-    : "";
-  return `<!doctype html><html><body style="margin:0;background:#FAFAF9;font-family:Inter,Segoe UI,Arial,sans-serif">
-<div style="max-width:560px;margin:0 auto;padding:32px 20px">
-<p style="margin:0 0 24px"><img src="${site.url}${site.logo.png}" width="180" height="57" alt="Maa One" style="display:block;border:0"></p>
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px">
-<h1 style="font-size:22px;color:#0f172a;margin:0 0 16px">${esc(opts.heading)}</h1>${p}${button}
-</div>
-<p style="font-size:12px;color:#64748b;margin:20px 0 0;line-height:1.6">${esc(site.creditLine)}<br>${esc(site.company)} · Questions? ${esc(opts.supportEmail)}</p>
-</div></body></html>`;
 }

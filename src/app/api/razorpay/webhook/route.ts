@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { formatMoney } from "@/lib/format";
+import { site } from "@/site.config";
 import { razorpay, razorpayConfigured, verifyWebhookSignature, type RzpPayment, type RzpSubscription } from "@/lib/razorpay";
 import {
   emailForUser,
   getPlanRecord,
   issueInvoiceWithPdf,
   recordPayment,
+  sendAdminAlert,
   sendCancelledEmail,
   sendInvoiceEmail,
   sendPaymentFailedEmail,
@@ -95,7 +98,17 @@ async function handle(db: ReturnType<typeof createAdminClient>, event: RazorpayE
       if (sub && previousStatus !== "authenticated" && sub.trial_ends_at) {
         const to = await emailForUser(db, sub.user_id);
         const plan = await getPlanRecord(db, sub.plan_code);
-        if (to) await sendTrialStartedEmail(to, plan?.name ?? sub.plan_code, sub.trial_ends_at);
+        if (to) await sendTrialStartedEmail(to, plan, sub);
+        await sendAdminAlert({
+          subject: `New trial: ${plan?.name ?? sub.plan_code}`,
+          heading: "A new customer started a free trial",
+          rows: [
+            ["Customer", to ?? "—"],
+            ["Plan", `${plan?.name ?? sub.plan_code} · ${sub.billing_period}`],
+            ["Trial ends", sub.trial_ends_at?.slice(0, 10) ?? "—"],
+          ],
+          link: { label: "Open subscribers", href: `${site.url}/admin/subscribers` },
+        });
       }
       return;
     }
@@ -118,7 +131,23 @@ async function handle(db: ReturnType<typeof createAdminClient>, event: RazorpayE
         unixToIstDate(subEntity?.current_end),
       );
       const to = await emailForUser(db, sub.user_id, payEntity.email);
-      if (to) await sendInvoiceEmail(to, invoice, pdf, (count ?? 0) === 0);
+      if (to)
+        await sendInvoiceEmail(to, invoice, pdf, (count ?? 0) === 0, {
+          planName: plan?.name ?? sub.plan_code,
+          period: sub.billing_period,
+          nextDate: sub.current_period_end,
+        });
+      await sendAdminAlert({
+        subject: `Payment received: ${formatMoney(invoice.total, invoice.currency)}`,
+        heading: (count ?? 0) === 0 ? "First payment from a new customer" : "Subscription payment received",
+        rows: [
+          ["Customer", to ?? "—"],
+          ["Amount", formatMoney(invoice.total, invoice.currency)],
+          ["Invoice", invoice.invoice_number],
+          ["Plan", `${plan?.name ?? sub.plan_code} · ${sub.billing_period}`],
+        ],
+        link: { label: "Open subscribers", href: `${site.url}/admin/subscribers` },
+      });
       return;
     }
 
