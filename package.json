@@ -14,7 +14,7 @@
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.468.0",
-    "next": "^15.5.28",
+    "next": "^16.4.3",
     "next-mdx-remote": "^6.0.0",
     "nodemailer": "^10.2.1",
     "pdf-lib": "^1.17.1",
