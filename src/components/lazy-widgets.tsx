@@ -32,7 +32,7 @@ function WhenVisible({ minHeight, children }: { minHeight: number; children: Rea
 }
 
 const AiDemoImpl = dynamic(() => import("./ai-demo").then((m) => m.AiDemo), { ssr: false });
-const ProductTourImpl = dynamic(() => import("./product-tour").then((m) => m.ProductTour), { ssr: false });
+const ProductFilmImpl = dynamic(() => import("./product-film").then((m) => m.ProductFilm), { ssr: false });
 const LossCalculatorImpl = dynamic(() => import("./loss-calculator").then((m) => m.LossCalculator), { ssr: false });
 
 export function LazyAiDemo(props: ComponentProps<typeof AiDemoImpl>) {
@@ -51,10 +51,10 @@ export function LazyLossCalculator(props: ComponentProps<typeof LossCalculatorIm
   );
 }
 
-export function LazyProductTour(props: ComponentProps<typeof ProductTourImpl>) {
+export function LazyProductFilm(props: ComponentProps<typeof ProductFilmImpl>) {
   return (
-    <WhenVisible minHeight={720}>
-      <ProductTourImpl {...props} />
+    <WhenVisible minHeight={640}>
+      <ProductFilmImpl {...props} />
     </WhenVisible>
   );
 }
