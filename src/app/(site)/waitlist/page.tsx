@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
   return {
     title: "Join the waitlist",
-    description: `Join the Maa One waitlist. Pilot in December 2026, launch on ${s.launchDateLabel}.`,
+    description: `Join the Maa One waitlist. Free pilot before launch, launching in ${s.launchYear}.`,
     alternates: { canonical: "/waitlist" },
   };
 }
@@ -20,8 +20,8 @@ export default async function WaitlistPage({
   const [{ plan, ref, utm_source }, s, plans] = await Promise.all([searchParams, getSettings(), getPlans()]);
   const defaultPlan = plans.some((p) => p.code === plan) ? plan! : "";
   const perks = [
-    { icon: CalendarCheck, text: "A chance to join the pilot in December 2026" },
-    { icon: Gift, text: `A ${s.trialDays}-day free trial when we launch on ${s.launchDateLabel}` },
+    { icon: CalendarCheck, text: "A chance to join the free pilot before launch" },
+    { icon: Gift, text: `A ${s.trialDays}-day free trial when we launch in ${s.launchYear}` },
     { icon: MessageCircle, text: "Help shape what we build next" },
   ];
 

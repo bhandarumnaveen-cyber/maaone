@@ -78,11 +78,11 @@ export default function FeaturesPage() {
                     </div>
                     <p className="mt-2 text-sm leading-relaxed text-muted">{m.description}</p>
                     <p className="mt-3 text-xs font-medium text-muted">
-                      {versionById[m.version].month}
+                      {versionById[m.version].when}
                       {m.upgrade && (
                         <>
                           {" · "}
-                          {m.upgrade.label} in {m.upgrade.version} ({versionById[m.upgrade.version].month})
+                          {m.upgrade.label} in {m.upgrade.version} ({versionById[m.upgrade.version].when})
                         </>
                       )}
                     </p>

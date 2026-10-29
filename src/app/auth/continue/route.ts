@@ -27,7 +27,7 @@ export async function GET() {
         const s = await getSettings();
         await sendEmail(
           user.email,
-          welcomeEmail(await getBrand(), { name: data?.full_name, salesOpen: s.salesOpen, launchDateLabel: s.launchDateLabel, trialDays: s.trialDays }),
+          welcomeEmail(await getBrand(), { name: data?.full_name, salesOpen: s.salesOpen, launchYear: s.launchYear, trialDays: s.trialDays }),
         );
       } catch (e) {
         console.error("[welcome email]", e);

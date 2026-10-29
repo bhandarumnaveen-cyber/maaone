@@ -14,7 +14,7 @@ export function FeatureRequestForm() {
       <div role="status" className="card p-6 text-center">
         <CheckCircle2 className="mx-auto h-10 w-10 text-success" aria-hidden="true" />
         <p className="mt-3 text-lg font-semibold text-ink">Thank you — request received.</p>
-        <p className="mt-1 text-sm text-muted">Naveen reads every request when planning the next version.</p>
+        <p className="mt-1 text-sm text-muted">Naveen and Shiwani read every request when planning the next version.</p>
         {state.preview && (
           <p className="mt-4 rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent-ink">
             Preview mode: this form is validated but not saved yet. Saving is switched on in Phase 2.

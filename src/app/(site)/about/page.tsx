@@ -55,12 +55,13 @@ export default async function AboutPage() {
 
           <figure className="card p-6 sm:p-8">
             <div className="flex items-center gap-4">
-              <div
-                role="img"
-                aria-label={`Photo of ${site.founder} (placeholder)`}
-                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-indigo-500 text-2xl font-bold text-white"
-              >
-                NG
+              <div className="flex shrink-0 -space-x-4" role="img" aria-label={`Photos of ${site.founder} (placeholders)`}>
+                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand to-indigo-500 text-xl font-bold text-white ring-4 ring-surface sm:h-20 sm:w-20 sm:text-2xl">
+                  NG
+                </span>
+                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-xl font-bold text-white ring-4 ring-surface sm:h-20 sm:w-20 sm:text-2xl">
+                  SM
+                </span>
               </div>
               <figcaption>
                 <p className="text-lg font-semibold text-ink">{site.founder}</p>
@@ -71,14 +72,14 @@ export default async function AboutPage() {
             </div>
             <blockquote className="mt-6 space-y-4 border-l-4 border-accent pl-4 leading-relaxed text-ink">
               <p>
-                &ldquo;I have watched good businesses lose customers for one simple reason — the
-                reply came too late. Maa One is my answer to that. It is the tool I wish every
-                small business owner I know had: simple enough to use between jobs, smart enough
+                &ldquo;We have watched good businesses lose customers for one simple reason — the
+                reply came too late. Maa One is our answer to that. It is the tool we wish every
+                small business owner we know had: simple enough to use between jobs, smart enough
                 to write the reply for you, and priced so that nobody is left out.
               </p>
               <p>
                 We are building it in the open, one module at a time, with the businesses who use
-                it. If you have an idea, write to me — I read every message.&rdquo;
+                it. If you have an idea, write to us — we read every message.&rdquo;
               </p>
             </blockquote>
           </figure>
@@ -132,9 +133,9 @@ export default async function AboutPage() {
               <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-500 via-orange-400 to-indigo-500" aria-hidden="true" />
               <p className="text-xs font-semibold tracking-[0.14em] text-orange-700 uppercase dark:text-orange-300">The builders</p>
               <NaveenCodesLogo className="mt-4 text-2xl" />
-              <p className="mt-2 text-sm font-medium text-muted">Developer brand of {site.founder}</p>
+              <p className="mt-2 text-sm font-medium text-muted">Built by {site.founder}</p>
               <p className="mt-4 leading-relaxed text-ink">
-                {site.founder}&rsquo;s developer brand, which designs and builds Maa One — the app,
+                The developer brand behind Maa One. {site.founder} design and build it — the app,
                 the AI and this website.
               </p>
               <ul className="mt-6 space-y-2 text-sm">
@@ -172,7 +173,7 @@ export default async function AboutPage() {
                 ["Company", site.company],
                 ["Product", site.name],
                 [site.founderTitle, site.founder],
-                ["Built by", "NaveenCodes"],
+                ["Built by", `NaveenCodes — ${site.founder}`],
                 ["Support", cfg.supportEmail],
                 ["WhatsApp", cfg.whatsappDisplay],
               ].map(([k, v]) => (

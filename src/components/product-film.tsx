@@ -52,7 +52,7 @@ const scenes = [
   { start: 23_000, title: "Approve from your phone", body: "One tap and the reply goes out on WhatsApp. Your phone and laptop stay in sync." },
   { start: 30_000, title: "Follow up, never forget", body: "Move the lead along your pipeline, set a reminder and hand it to your staff." },
   { start: 38_000, title: "Know your day in one message", body: "A daily summary on WhatsApp, and a live dashboard of leads, reply time and wins." },
-  { start: 45_000, title: "Poora business, ek app mein", body: "Maa One — launching 24 January 2027." },
+  { start: 45_000, title: "Poora business, ek app mein", body: "Maa One — Maa Labs' biggest launch, coming in 2027." },
 ] as const;
 
 const S: number[] = scenes.map((s) => s.start);
@@ -380,7 +380,7 @@ function EndCard({ t, format }: { t: number; format: Format }) {
         </p>
         <p className={clsx("text-indigo-200/80", big ? "mt-1.5 text-[14px]" : "mt-1.5 text-[11px]")}>Next: bookings, GST invoices and UPI payments</p>
         <p className={clsx("mx-auto inline-flex items-center gap-2 rounded-full bg-amber-400 font-bold text-slate-950", big ? "mt-7 px-5 py-2.5 text-[16px]" : "mt-6 px-4 py-2 text-[12px]")}>
-          Launching 24 January 2027 · one.maalabs.in
+          Launching 2027 · one.maalabs.in
         </p>
       </div>
     </div>

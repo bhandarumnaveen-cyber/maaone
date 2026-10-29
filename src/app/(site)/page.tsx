@@ -107,7 +107,6 @@ export default async function Home() {
             price: (p.inrMonthly / 100).toFixed(2),
             priceCurrency: "INR",
             category: "subscription",
-            availabilityStarts: settings.launchDate,
           })),
         }}
       />

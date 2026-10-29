@@ -28,7 +28,7 @@ export default async function PricingPage() {
       <PageHero eyebrow="Pricing" title="Simple pricing for every stage">
         {s.salesOpen
           ? `Start with a ${s.trialDays}-day free trial of everything in Growth.`
-          : `Sales open on ${s.launchDateLabel} with a ${s.trialDays}-day free trial. Join the waitlist to be first in line.`}
+          : `Sales open in ${s.launchYear} with a ${s.trialDays}-day free trial. Join the waitlist to be first in line.`}
       </PageHero>
 
       <section className="section">

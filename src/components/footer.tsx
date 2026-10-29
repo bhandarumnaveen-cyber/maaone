@@ -62,7 +62,7 @@ export async function Footer() {
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 md:mt-0 md:shrink-0 md:flex-col md:items-end lg:mt-5 lg:items-start">
             {!s.salesOpen && (
-              <p className="text-sm font-semibold text-accent-ink">Launching {s.launchDateLabel}</p>
+              <p className="text-sm font-semibold text-accent-ink">Launching {s.launchYear}</p>
             )}
             <ButtonLink href={cta.href}>{cta.label}</ButtonLink>
           </div>
@@ -115,7 +115,7 @@ export async function Footer() {
             >
               <NaveenCodesLogo />
             </a>
-            <p className="mt-1 text-sm text-muted">Developer brand of {site.founder}</p>
+            <p className="mt-1 text-sm text-muted">Built by {site.founder}</p>
             <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
               <li>
                 <a href={site.developer.url} target="_blank" rel="noopener noreferrer" className={`${linkClass} inline-flex items-center gap-1.5`}>

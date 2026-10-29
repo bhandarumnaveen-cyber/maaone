@@ -113,7 +113,7 @@ export function SiteSettingsForm({ initial, razorpayReady }: { initial: SiteSett
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field id="s-launch" label="Launch date" error={errors.launch_date}>
+        <Field id="s-launch" label="Launch date" hint="Internal. The website shows only the year." error={errors.launch_date}>
           <input id="s-launch" name="launch_date" type="date" className="input" defaultValue={initial.launch_date} {...errProps("s-launch", errors.launch_date)} />
         </Field>
         <Field id="s-trial" label="Free trial (days)" error={errors.trial_days}>

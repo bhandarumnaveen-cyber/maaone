@@ -32,8 +32,12 @@ export const site = {
   company: "Maa Labs Private Limited",
   companyShort: "Maa Labs",
   companyUrl: "https://maalabs.in",
-  founder: "Naveen Goyal",
-  founderTitle: "Founder & Director",
+  /** Founders & Directors of Maa Labs, who also build Maa One. */
+  founders: ["Naveen Goyal", "Shiwani Mehra"],
+  founder: "Naveen Goyal & Shiwani Mehra",
+  founderTitle: "Founders & Directors",
+  /** Named grievance officer on the legal pages (one person, as the rules require). */
+  grievanceOfficer: { name: "Naveen Goyal", title: "Founder & Director" },
   developer: {
     name: "NaveenCodes",
     url: "https://naveencodes.com",
@@ -59,7 +63,8 @@ export type VersionStatus = "released" | "in-progress" | "planned";
 
 export type Version = {
   id: VersionId;
-  month: string;
+  /** When it ships, in words — no exact dates before launch. */
+  when: string;
   name: string;
   status: VersionStatus;
   summary: string;
@@ -68,7 +73,7 @@ export type Version = {
 export const versions: Version[] = [
   {
     id: "v1",
-    month: "January 2027",
+    when: "Launch · 2027",
     name: "Maa One Inbox",
     status: "in-progress",
     summary:
@@ -76,14 +81,14 @@ export const versions: Version[] = [
   },
   {
     id: "v1.5",
-    month: "March 2027",
+    when: "Soon after launch",
     name: "Mobile app",
     status: "planned",
     summary: "Maa One on your phone as a proper app — Android first, then iOS.",
   },
   {
     id: "v2",
-    month: "May 2027",
+    when: "After launch",
     name: "Get paid",
     status: "planned",
     summary:
@@ -91,7 +96,7 @@ export const versions: Version[] = [
   },
   {
     id: "v3",
-    month: "August 2027",
+    when: "Later",
     name: "Do the work and grow",
     status: "planned",
     summary:
@@ -99,7 +104,7 @@ export const versions: Version[] = [
   },
   {
     id: "v4",
-    month: "November 2027 onward",
+    when: "Future",
     name: "Scale",
     status: "planned",
     summary:
@@ -439,11 +444,11 @@ export const comparison: { label: string; values: Record<string, Cell> }[] = [
 /* Launch path                                                         */
 /* ------------------------------------------------------------------ */
 
-export function launchSteps(s: { trialDays: number; launchDateLabel: string }) {
+export function launchSteps(s: { trialDays: number; launchYear: string }) {
   return [
     { title: "Join the waitlist", when: "Now", current: true },
-    { title: "Pilot with the first businesses", when: "December 2026" },
-    { title: `Paid launch with a ${s.trialDays}-day free trial`, when: s.launchDateLabel },
+    { title: "Free pilot with the first businesses", when: "Before launch" },
+    { title: `Launch with a ${s.trialDays}-day free trial`, when: s.launchYear },
     { title: "A new module every 2–3 months, small updates every 2 weeks", when: "After launch" },
   ];
 }
@@ -471,7 +476,7 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: "Is there a mobile app?",
-    a: "From day one Maa One is an installable web app that works on any phone. The Android app arrives in v1.5 (March 2027), followed by iOS.",
+    a: "From day one Maa One is an installable web app that works on any phone. The Android app arrives in v1.5, soon after launch, followed by iOS.",
   },
   {
     q: "Which languages does the AI reply in?",

@@ -247,7 +247,7 @@ export async function sendRenewalReminderEmail(to: string, planName: string, amo
 
 export async function sendWaitlistEmail(to: string, name: string, position: number | undefined) {
   const [b, s] = await Promise.all([getBrand(), getSettings()]);
-  await sendEmail(to, waitlistEmail(b, { name, position, launchDateLabel: s.launchDateLabel, trialDays: s.trialDays }));
+  await sendEmail(to, waitlistEmail(b, { name, position, launchYear: s.launchYear, trialDays: s.trialDays }));
 }
 
 export async function sendPlanChangedEmail(to: string, o: { from: string; to: string; period: string; when: "now" | "renewal"; date?: string | null }) {

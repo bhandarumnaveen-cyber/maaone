@@ -10,7 +10,7 @@ import { getSettings } from "@/lib/settings";
 export const metadata: Metadata = {
   title: "Roadmap — Kab kya aayega",
   description:
-    "When each part of Maa One ships: the inbox in January 2027, the mobile app in March, payments in May, field work and growth tools in August, and more.",
+    "What ships when: the Maa One Inbox at launch in 2027, then the mobile app, bookings and payments, field work and growth tools, and more.",
   alternates: { canonical: "/roadmap" },
 };
 

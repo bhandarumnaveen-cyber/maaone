@@ -7,8 +7,8 @@ export function sampleEmails(b: Brand, s: Settings): { key: string; label: strin
   const inAWeek = new Date(Date.now() + 7 * 864e5).toISOString();
   const inAMonth = new Date(Date.now() + 30 * 864e5).toISOString();
   return [
-    { key: "welcome", label: "Welcome", when: "First login after creating an account", email: T.welcomeEmail(b, { name: "Harleen Kaur", salesOpen: s.salesOpen, launchDateLabel: s.launchDateLabel, trialDays: s.trialDays }) },
-    { key: "waitlist", label: "Waitlist joined", when: "Someone joins the waitlist", email: T.waitlistEmail(b, { name: "Harleen Kaur", position: 128, launchDateLabel: s.launchDateLabel, trialDays: s.trialDays }) },
+    { key: "welcome", label: "Welcome", when: "First login after creating an account", email: T.welcomeEmail(b, { name: "Harleen Kaur", salesOpen: s.salesOpen, launchYear: s.launchYear, trialDays: s.trialDays }) },
+    { key: "waitlist", label: "Waitlist joined", when: "Someone joins the waitlist", email: T.waitlistEmail(b, { name: "Harleen Kaur", position: 128, launchYear: s.launchYear, trialDays: s.trialDays }) },
     { key: "trial", label: "Free trial started", when: "Razorpay confirms a new subscription with a trial", email: T.trialStartedEmail(b, { planName: "Growth", trialDays: s.trialDays, trialEnds: inAWeek, firstCharge: "₹1,768.82 incl. GST", appUrl: s.appUrl, appReady: s.appReady }) },
     { key: "payment", label: "Payment received + invoice", when: "Every successful charge (GST invoice PDF attached)", email: T.paymentReceivedEmail(b, { first: true, amount: "₹1,768.82", invoiceNumber: "ML/2026-27/0042", planName: "Growth", period: "Monthly", paidOn: T.istDate(new Date().toISOString())!, nextDate: T.istDate(inAMonth), appUrl: s.appUrl, appReady: s.appReady }) },
     { key: "payment-failed", label: "Payment failed", when: "A renewal charge fails", email: T.paymentFailedEmail(b) },

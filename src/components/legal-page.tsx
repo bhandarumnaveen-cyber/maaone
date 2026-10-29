@@ -31,7 +31,7 @@ export async function GrievanceOfficer() {
         {site.name} is:
       </p>
       <p>
-        <strong className="text-ink">{site.founder}</strong>, {site.founderTitle}, {site.company}
+        <strong className="text-ink">{site.grievanceOfficer.name}</strong>, {site.grievanceOfficer.title}, {site.company}
         <br />
         Email: <a href={`mailto:${cfg.supportEmail}`}>{cfg.supportEmail}</a>
       </p>
