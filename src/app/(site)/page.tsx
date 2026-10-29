@@ -22,7 +22,7 @@ import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchStrip } from "@/components/launch-strip";
 import { AppImage, type AppImageName } from "@/components/app-image";
-import { LazyAiDemo, LazyLossCalculator, LazyProductTour } from "@/components/lazy-widgets";
+import { LazyAiDemo, LazyLossCalculator, LazyProductFilm } from "@/components/lazy-widgets";
 import { FeatureBlocks } from "@/components/feature-blocks";
 import { RoadmapTimeline } from "@/components/roadmap-timeline";
 import { PricingPreview } from "@/components/pricing-preview";
@@ -228,14 +228,19 @@ export default async function Home() {
         <div className="pointer-events-none absolute -top-32 -left-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -right-24 -bottom-32 h-96 w-96 rounded-full bg-amber-400/15 blur-3xl" aria-hidden="true" />
         <div className="container-page relative">
-          <div className="mx-auto mb-10 max-w-2xl text-center lg:mb-14">
-            <p className="text-sm font-semibold tracking-wide text-amber-300 uppercase">Product demo · 25 seconds</p>
+          <div className="mx-auto mb-10 max-w-3xl text-center lg:mb-12">
+            <p className="text-sm font-semibold tracking-wide text-amber-300 uppercase">Product demo · 50 seconds</p>
             <h2 id="tour-title" className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              From WhatsApp enquiry to paid invoice
+              See how Maa One works — on your laptop and phone
             </h2>
-            <p className="mt-4 text-lg text-indigo-100">Watch one real-life lead go through Maa One — the way it will work on your phone.</p>
+            <p className="mt-4 text-lg text-indigo-100">
+              Follow one enquiry for a bridal makeup studio in Mumbai: from the website form to a reply on WhatsApp, a
+              follow-up and the day&rsquo;s summary.
+            </p>
           </div>
-          <LazyProductTour />
+          <div className="mx-auto max-w-[1100px]">
+            <LazyProductFilm />
+          </div>
         </div>
       </section>
 
