@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { badRequest, readJson, serverError } from "@/lib/api";
 import { requireUser } from "@/lib/auth";
-import { getPlanRecord, priceFor, syncSubscription } from "@/lib/billing";
-import { razorpay, RazorpayError } from "@/lib/razorpay";
+import { emailForUser, getPlanRecord, priceFor, sendPlanChangedEmail, syncSubscription } from "@/lib/billing";
+import { razorpay, RazorpayError, unixToIso } from "@/lib/razorpay";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const fail = (error: string, status = 400) => NextResponse.json({ ok: false, error }, { status });
@@ -44,6 +44,15 @@ export async function POST(req: Request) {
       customer_notify: 1,
     });
     if (upgrade) await syncSubscription(db, updated);
+    after(async () =>
+      sendPlanChangedEmail((await emailForUser(db, user.id, user.email)) ?? "", {
+        from: current?.name ?? sub.plan_code,
+        to: target.name,
+        period,
+        when: upgrade ? "now" : "renewal",
+        date: unixToIso(updated.current_end),
+      }),
+    );
     return NextResponse.json({ ok: true, when: upgrade ? "now" : "renewal" });
   } catch (e) {
     if (e instanceof RazorpayError) return fail(e.message, 502);

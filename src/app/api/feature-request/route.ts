@@ -1,8 +1,10 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { badRequest, invalid, isBot, readJson, verifyHuman, serverError } from "@/lib/api";
 import { validateFeatureRequest } from "@/lib/validation";
 import { createAnonClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
+import { sendAdminAlert } from "@/lib/billing";
+import { site } from "@/site.config";
 
 export async function POST(req: Request) {
   const body = await readJson(req);
@@ -20,5 +22,20 @@ export async function POST(req: Request) {
     .insert({ name: data.name || null, email: data.email || null, request: data.request });
   if (error) return serverError("feature_requests", error);
 
+  after(() =>
+    sendAdminAlert(
+      {
+        subject: "New feature request",
+        heading: "Someone asked for a feature",
+        rows: [
+          ["Name", data.name || "—"],
+          ["Email", data.email || "—"],
+        ],
+        message: { label: "Request", text: data.request },
+        link: { label: "Open feature requests", href: `${site.url}/admin/feature-requests` },
+      },
+      data.email || undefined,
+    ),
+  );
   return NextResponse.json({ ok: true });
 }

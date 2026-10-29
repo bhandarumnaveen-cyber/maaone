@@ -15,7 +15,7 @@ sharing details publicly. Testing must not touch other customers' data or disrup
 
 - Never commit keys. Real values live only in `.env.local` (ignored) and Hostinger environment variables;
   `.env.example` holds placeholders. CI scans every push for secrets.
-- `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `RESEND_API_KEY`,
+- `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `SMTP_PASS`,
   `TURNSTILE_SECRET_KEY` and `CRON_SECRET` are server-only: never prefix them with `NEXT_PUBLIC_`
   and only read them in files that import `server-only`.
 - If a key is ever pasted in a chat, issue or commit, rotate it at once; deleting the text is not enough.

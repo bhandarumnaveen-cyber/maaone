@@ -14,6 +14,7 @@ import {
   LifeBuoy,
   Lightbulb,
   LogOut,
+  Mail,
   Menu,
   Settings,
   MessageSquareText,
@@ -38,6 +39,7 @@ const icons = {
   inbox: Inbox,
   profile: UserRound,
   settings: Settings,
+  mail: Mail,
 };
 
 export type ShellNavItem = { href: string; label: string; icon: keyof typeof icons; badge?: number };

@@ -5,7 +5,7 @@ Maa One is a product of Maa Labs Private Limited · Built by NaveenCodes.
 
 ## Stack
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Supabase (auth, database, storage) ·
-Razorpay Subscriptions · Resend (email) · MDX (blog, changelog) · hosted on Hostinger (Node.js).
+Razorpay Subscriptions · Hostinger SMTP (email) · MDX (blog, changelog) · hosted on Hostinger (Node.js).
 
 ## Develop
 ```bash
@@ -27,7 +27,7 @@ npm run lint && npm run build
 - `content/blog/*.mdx` and `content/changelog/*.mdx`: posts and releases (files starting with `_` or
   marked `draft: true` are not published; see `content/changelog/_template.mdx`).
 - Environment variables: see `.env.example`. `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`,
-  `RAZORPAY_WEBHOOK_SECRET`, `RESEND_API_KEY` and `CRON_SECRET` are server-only.
+  `RAZORPAY_WEBHOOK_SECRET`, `SMTP_PASS` and `CRON_SECRET` are server-only.
 
 ## Admin console
 `/admin` (admins only): overview, waitlist (with referral counts and source), feature requests, contact
@@ -51,7 +51,10 @@ See `docs/website-backlog.md` for optional switches (analytics, spam protection)
      (authenticated, activated, charged, pending, halted, cancelled, completed, paused, resumed, updated)
      and `payment.failed`. Put its secret in `RAZORPAY_WEBHOOK_SECRET`.
    - Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
-4. **Email**: set `RESEND_API_KEY` and `EMAIL_FROM` (verify the maalabs.in domain in Resend).
+4. **Email (Hostinger SMTP)**: set `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, `EMAIL_REPLY_TO` and `ADMIN_ALERT_EMAIL`
+   (see `.env.example`). Check SPF, DKIM and DMARC for the sending domain in hPanel → DNS. In Supabase →
+   Authentication → Emails, use the same SMTP mailbox and paste the login templates from `/admin/emails`.
+   `/admin/emails` previews every email and sends you a test. Without SMTP, emails are skipped and logged.
    Without a key, emails are skipped and logged.
 5. **Invoices**: set `INVOICE_SELLER_GSTIN` and `INVOICE_SELLER_ADDRESS` (printed on PDFs only), check
    `site_settings.company_state`, and have your CA confirm the SAC code (`INVOICE_SAC`, default 997331).

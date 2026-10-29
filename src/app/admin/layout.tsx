@@ -40,6 +40,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: "/admin/contact", label: "Contact messages", icon: "messages", badge: s?.contact_messages_new },
         { href: "/admin/subscribers", label: "Subscribers", icon: "subscribers" },
         { href: "/admin/support", label: "Support tickets", icon: "support", badge: s?.support_tickets_open },
+        { href: "/admin/emails", label: "Emails", icon: "mail" },
         { href: "/admin/settings", label: "Settings", icon: "settings" },
         { href: "/admin/profile", label: "My profile", icon: "profile" },
       ]}
